@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>McGill Hose &amp; Coupling | NE Terminal GTM Hub</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#F4F6F9;color:#2D3748}
+
+/* ── HIDDEN RADIO/CHECKBOX INPUTS ────────────────────────── */
+input[type=radio],input[type=checkbox]{display:none}
+
+/* ── LAYOUT ──────────────────────────────────────────────── */
+#app{display:flex;height:100vh;overflow:hidden}
+
+/* ── SIDEBAR ─────────────────────────────────────────────── */
+#sidebar{width:230px;min-width:230px;background:#1a3d25;display:flex;flex-direction:column;height:100vh;overflow-y:auto;flex-shrink:0}
+#sidebar-header{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,0.1)}
+.brand{color:#fff;font-size:13px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.sub{color:#8FA3C0;font-size:11px;margin-top:3px}
+#sidebar nav{padding:10px 0;flex:1}
+.nav-section-lbl{display:block;color:#8FA3C0;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:14px 18px 6px;cursor:default}
+.nav-lbl{display:flex;align-items:center;gap:10px;padding:9px 18px;color:#B8C8DC;font-size:13px;cursor:pointer;border-left:3px solid transparent;transition:all .15s}
+.nav-lbl:hover{background:rgba(255,255,255,0.06);color:#fff}
+.nav-lbl .icon{width:16px;text-align:center;font-size:14px}
+#sidebar-footer{padding:14px 18px;border-top:1px solid rgba(255,255,255,0.1)}
+.footer-text{color:#8FA3C0;font-size:10px;line-height:1.5}
+
+/* ── MAIN ────────────────────────────────────────────────── */
+#main{flex:1;overflow-y:auto;height:100vh}
+.page{display:none;padding:28px 32px;min-height:100vh}
+
+/* ── PAGE NAV: show correct page based on checked radio ──── */
+#r-dashboard:checked~#app #p-dashboard,
+#r-prospects:checked~#app #p-prospects,
+#r-outreach:checked~#app #p-outreach,
+#r-playbook:checked~#app #p-playbook,
+#r-competitive:checked~#app #p-competitive,
+#r-capabilities:checked~#app #p-capabilities,
+#r-resources:checked~#app #p-resources{display:block}
+
+/* Default: show dashboard if nothing else active */
+#p-dashboard{display:block}
+#r-prospects:checked~#app #p-dashboard,
+#r-outreach:checked~#app #p-dashboard,
+#r-playbook:checked~#app #p-dashboard,
+#r-competitive:checked~#app #p-dashboard,
+#r-capabilities:checked~#app #p-dashboard,
+#r-resources:checked~#app #p-dashboard{display:none}
+
+/* ── ACTIVE NAV HIGHLIGHT ────────────────────────────────── */
+#r-dashboard:checked~#app label[for=r-dashboard],
+#r-prospects:checked~#app label[for=r-prospects],
+#r-outreach:checked~#app label[for=r-outreach],
+#r-playbook:checked~#app label[for=r-playbook],
+#r-competitive:checked~#app label[for=r-competitive],
+#r-capabilities:checked~#app label[for=r-capabilities],
+#r-resources:checked~#app label[for=r-resources]{background:rgba(41,106,60,0.25);color:#fff;border-left-color:#296a3C}
+
+/* ── PAGE HEADER ─────────────────────────────────────────── */
+.page-header{margin-bottom:24px}
+.page-header h1{font-size:22px;font-weight:700;color:#1a3d25}
+.page-header p{color:#718096;font-size:14px;margin-top:4px}
+
+/* ── CARDS ───────────────────────────────────────────────── */
+.card{background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:20px;margin-bottom:16px}
+.card-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#8FA3C0;margin-bottom:12px}
+
+/* ── STAT GRID ───────────────────────────────────────────── */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:#fff;border-radius:8px;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,0.08);border-top:3px solid #296a3C}
+.stat-card.blue{border-top-color:#2563EB}.stat-card.orange{border-top-color:#E07820}.stat-card.green2{border-top-color:#16A34A}
+.stat-num{font-size:28px;font-weight:800;color:#1a3d25}
+.stat-label{font-size:12px;color:#718096;margin-top:2px}
+
+/* ── TWO / THREE COL ─────────────────────────────────────── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+
+/* ── BADGES ──────────────────────────────────────────────── */
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600}
+.ba{background:#FEE2E2;color:#B91C1C}.bb{background:#FEF3C7;color:#92400E}.bc{background:#F3F4F6;color:#6B7280}
+.bm{background:#DBEAFE;color:#1D4ED8}.bp{background:#D1FAE5;color:#065F46}
+
+/* ── TABLE ───────────────────────────────────────────────── */
+.data-table{width:100%;border-collapse:collapse;font-size:12px}
+.data-table th{background:#F4F6F9;padding:9px 11px;text-align:left;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#718096;border-bottom:2px solid #E2E8F0;position:sticky;top:0;z-index:1}
+.data-table td{padding:9px 11px;border-bottom:1px solid #E2E8F0;vertical-align:top}
+.data-table tr:hover td{background:#F9FAFB}
+.table-wrap{overflow:auto;max-height:calc(100vh - 240px);border-radius:8px;border:1px solid #E2E8F0}
+
+/* ── ACCORDION ───────────────────────────────────────────── */
+.acc-item{border:1px solid #E2E8F0;border-radius:8px;margin-bottom:10px;overflow:hidden;background:#fff}
+.acc-lbl{padding:14px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:14px;color:#1a3d25;background:#fff;transition:background .15s;user-select:none}
+.acc-lbl:hover{background:#F9FAFB}
+.acc-icon{color:#296a3C;font-size:18px;font-weight:700;transition:transform .2s;display:inline-block;line-height:1}
+.acc-body{display:none;padding:18px;border-top:1px solid #E2E8F0;font-size:13px;line-height:1.7;color:#4A5568}
+input[type=checkbox]:checked+.acc-lbl .acc-icon{transform:rotate(45deg)}
+input[type=checkbox]:checked+.acc-lbl+.acc-body{display:block}
+
+/* ── TABS (radio-based) ───────────────────────────────────── */
+.tab-wrap{margin-bottom:0}
+.tab-nav{display:flex;border-bottom:2px solid #E2E8F0;margin-bottom:0}
+.tab-lbl{padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;color:#718096;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s}
+.tab-lbl:hover{color:#1a3d25}
+.tab-panel{display:none;padding:20px 0}
+
+/* Competitive tabs */
+#tc-couplers:checked~.tab-nav label[for=tc-couplers],
+#tc-arms:checked~.tab-nav label[for=tc-arms],
+#tc-monitors:checked~.tab-nav label[for=tc-monitors],
+#tc-hose:checked~.tab-nav label[for=tc-hose],
+#tc-summary:checked~.tab-nav label[for=tc-summary]{color:#296a3C;border-bottom-color:#296a3C}
+
+#tc-couplers:checked~.tab-panels #tp-couplers,
+#tc-arms:checked~.tab-panels #tp-arms,
+#tc-monitors:checked~.tab-panels #tp-monitors,
+#tc-hose:checked~.tab-panels #tp-hose,
+#tc-summary:checked~.tab-panels #tp-summary{display:block}
+
+/* Default first tab */
+#tp-couplers{display:block}
+#tc-arms:checked~.tab-panels #tp-couplers,
+#tc-monitors:checked~.tab-panels #tp-couplers,
+#tc-hose:checked~.tab-panels #tp-couplers,
+#tc-summary:checked~.tab-panels #tp-couplers{display:none}
+
+/* Outreach timeline tabs */
+#ot-1:checked~.touch-nav label[for=ot-1],
+#ot-2:checked~.touch-nav label[for=ot-2],
+#ot-3:checked~.touch-nav label[for=ot-3],
+#ot-4:checked~.touch-nav label[for=ot-4],
+#ot-5:checked~.touch-nav label[for=ot-5],
+#ot-6:checked~.touch-nav label[for=ot-6]{background:#296a3C;color:#fff}
+
+#ot-1:checked~.touch-panels #touch-1,
+#ot-2:checked~.touch-panels #touch-2,
+#ot-3:checked~.touch-panels #touch-3,
+#ot-4:checked~.touch-panels #touch-4,
+#ot-5:checked~.touch-panels #touch-5,
+#ot-6:checked~.touch-panels #touch-6{display:block}
+
+#touch-1{display:block}
+#ot-2:checked~.touch-panels #touch-1,
+#ot-3:checked~.touch-panels #touch-1,
+#ot-4:checked~.touch-panels #touch-1,
+#ot-5:checked~.touch-panels #touch-1,
+#ot-6:checked~.touch-panels #touch-1{display:none}
+
+/* ── TOUCH TIMELINE UI ───────────────────────────────────── */
+.touch-nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.touch-lbl{padding:10px 16px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;background:#E2E8F0;color:#718096;text-align:center;transition:all .15s;user-select:none;line-height:1.4}
+.touch-lbl:hover{background:#d0d8df;color:#1a3d25}
+.touch-panel{display:none}
+.touch-card{background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:20px;font-size:13px;line-height:1.7;color:#4A5568}
+.touch-card h3{font-size:15px;font-weight:700;color:#1a3d25;margin-bottom:4px}
+.touch-meta{font-size:11px;color:#296a3C;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px}
+.email-block{background:#F9FAFB;border:1px solid #E2E8F0;border-radius:6px;padding:14px;margin-top:12px;font-size:12px;white-space:pre-wrap;line-height:1.6}
+.subject-line{font-weight:700;color:#1a3d25;margin-bottom:8px;font-size:13px}
+
+/* ── OBJECTION CARDS (checkbox accordion) ────────────────── */
+.obj-card{border:1px solid #E2E8F0;border-radius:8px;margin-bottom:10px;overflow:hidden}
+.obj-lbl{background:#F4F6F9;padding:12px 16px;cursor:pointer;font-size:13px;font-weight:600;color:#1a3d25;display:flex;justify-content:space-between;align-items:center;user-select:none}
+.obj-lbl:hover{background:#EEF2F7}
+.obj-arrow{color:#296a3C;font-weight:700;font-size:14px;transition:transform .2s;display:inline-block}
+input[type=checkbox]:checked+.obj-lbl .obj-arrow{transform:rotate(90deg)}
+.obj-body{display:none;padding:14px 16px;font-size:13px;line-height:1.7;color:#4A5568;background:#fff}
+input[type=checkbox]:checked+.obj-lbl+.obj-body{display:block}
+.obj-type{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#296a3C;margin-bottom:4px}
+.obj-text{background:#F9FAFB;border-left:3px solid #296a3C;padding:10px 14px;border-radius:0 6px 6px 0;margin-top:8px;font-style:italic}
+
+/* ── PRODUCT CARDS ───────────────────────────────────────── */
+.product-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}
+.product-card{background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,0.08);overflow:hidden}
+.pc-header{background:#1a3d25;padding:16px;color:#fff}
+.pc-header h3{font-size:14px;font-weight:700}
+.pc-sub{font-size:11px;color:#8FA3C0;margin-top:3px}
+.pc-body{padding:16px;font-size:13px;line-height:1.7;color:#4A5568}
+.pc-body ul{padding-left:18px;margin-top:6px}
+.pc-body li{margin-bottom:4px}
+.win-box{background:#e8f5e9;border-radius:6px;padding:10px 14px;margin-top:10px;font-size:12px;color:#1b5e20;font-weight:600}
+
+/* ── HIGHLIGHT BOXES ─────────────────────────────────────── */
+.highlight{background:#f0f7f2;border-left:4px solid #296a3C;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:13px;color:#4A5568;line-height:1.6}
+.highlight strong{color:#296a3C}
+.info-box{background:#EFF6FF;border-left:4px solid #2563EB;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:13px;color:#1E40AF}
+
+/* ── PAIN TABLE ──────────────────────────────────────────── */
+.pain-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+.pain-table th{background:#1a3d25;color:#fff;padding:10px 14px;text-align:left;font-size:12px}
+.pain-table td{padding:10px 14px;border-bottom:1px solid #E2E8F0;vertical-align:top}
+.pain-table td:first-child{font-weight:600;color:#296a3C}
+.pain-table tr:hover td{background:#F9FAFB}
+
+/* ── OPERATOR GRID ───────────────────────────────────────── */
+.op-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:0}
+.op-card{background:#F9FAFB;border:1px solid #E2E8F0;border-radius:8px;padding:14px;font-size:13px}
+.op-card h4{font-size:13px;font-weight:700;color:#1a3d25;margin-bottom:2px}
+.op-sub{font-size:11px;color:#718096;margin-bottom:6px}
+.op-detail{font-size:12px;color:#4A5568;line-height:1.5}
+
+/* ── QUICK CARD GRID ─────────────────────────────────────── */
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.qc{background:#F9FAFB;border:1px solid #E2E8F0;border-radius:8px;padding:14px;cursor:pointer;transition:all .15s;display:block}
+.qc:hover{background:#f0f7f2;border-color:#296a3C}
+.qc h4{font-size:13px;font-weight:700;color:#1a3d25;margin-bottom:4px}
+.qc p{font-size:12px;color:#718096;line-height:1.5}
+
+/* ── COMP SUMMARY TABLE ──────────────────────────────────── */
+.comp-table{width:100%;border-collapse:collapse;font-size:13px}
+.comp-table th{background:#1a3d25;color:#fff;padding:10px 14px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+.comp-table td{padding:10px 14px;border-bottom:1px solid #E2E8F0;vertical-align:top}
+.comp-table tr:hover td{background:#F9FAFB}
+.comp-table td:last-child{color:#16A34A;font-weight:600;font-size:12px}
+
+/* ── SECTION TITLE ───────────────────────────────────────── */
+.st{font-size:14px;font-weight:700;color:#1a3d25;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #E2E8F0;margin-top:16px}
+.st:first-child{margin-top:0}
+
+/* ── RULES LIST ──────────────────────────────────────────── */
+.rules-list{list-style:none;counter-reset:rules}
+.rules-list li{counter-increment:rules;display:flex;gap:14px;padding:14px 0;border-bottom:1px solid #E2E8F0;font-size:13px;align-items:flex-start}
+.rules-list li:last-child{border-bottom:none}
+.rules-list li::before{content:counter(rules);background:#296a3C;color:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;margin-top:1px}
+
+/* ── RESOURCE LIST ───────────────────────────────────────── */
+.res-list{list-style:none}
+.res-list li{padding:14px 16px;border-bottom:1px solid #E2E8F0;display:flex;align-items:center;gap:14px}
+.res-list li:last-child{border-bottom:none}
+.res-icon{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.res-info h4{font-size:13px;font-weight:600;color:#1a3d25}
+.res-info p{font-size:12px;color:#718096;margin-top:2px}
+
+/* ── CONTACT BLOCK ───────────────────────────────────────── */
+.contact-block{background:#1a3d25;border-radius:8px;padding:20px;color:#fff;margin-top:20px}
+.contact-block h3{font-size:15px;font-weight:700;margin-bottom:8px}
+.contact-block p{font-size:13px;color:#a8c5b2;line-height:1.6}
+
+/* ── WIN TABLE ───────────────────────────────────────────── */
+.win-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}
+.win-table td{padding:8px 12px;vertical-align:top;border-bottom:1px solid #E2E8F0}
+.win-table tr:last-child td{border-bottom:none}
+.win-table td:first-child{font-weight:600;color:#1a3d25;width:40%}
+</style>
+</head>
+<body>
+
+<!-- ── PAGE NAVIGATION RADIOS (must be before #app in DOM) ── -->
+<input type="radio" name="nav" id="r-dashboard" checked>
+<input type="radio" name="nav" id="r-prospects">
+<input type="radio" name="nav" id="r-outreach">
+<input type="radio" name="nav" id="r-playbook">
+<input type="radio" name="nav" id="r-competitive">
+<input type="radio" name="nav" id="r-capabilities">
+<input type="radio" name="nav" id="r-resources">
+
+<div id="app">
+
+<!-- ════════════ SIDEBAR ════════════ -->
+<div id="sidebar">
+  <div id="sidebar-header">
+    <div class="brand">McGill Hose &amp; Coupling</div>
+    <div class="sub">NE Terminal GTM Hub &nbsp;·&nbsp; 2026</div>
+  </div>
+  <nav>
+    <span class="nav-section-lbl">Overview</span>
+    <label for="r-dashboard" class="nav-lbl"><span class="icon">⬛</span> Dashboard</label>
+
+    <span class="nav-section-lbl">Prospecting</span>
+    <label for="r-prospects" class="nav-lbl"><span class="icon">🗂</span> Prospect Directory</label>
+    <label for="r-outreach" class="nav-lbl"><span class="icon">📨</span> Outreach Sequence</label>
+
+    <span class="nav-section-lbl">Sales Tools</span>
+    <label for="r-playbook" class="nav-lbl"><span class="icon">📖</span> Sales Playbook</label>
+    <label for="r-competitive" class="nav-lbl"><span class="icon">⚔</span> Competitive Intel</label>
+
+    <span class="nav-section-lbl">Products</span>
+    <label for="r-capabilities" class="nav-lbl"><span class="icon">⚙</span> Capabilities</label>
+
+    <span class="nav-section-lbl">Files</span>
+    <label for="r-resources" class="nav-lbl"><span class="icon">📁</span> Resources</label>
+  </nav>
+  <div id="sidebar-footer">
+    <div class="footer-text">For internal use only<br>Terminal &amp; Transfer Systems<br>McGill Hose &amp; Coupling, Inc.</div>
+  </div>
+</div>
+
+<!-- ════════════ MAIN ════════════ -->
+<div id="main">
+
+<!-- ══ DASHBOARD ══════════════════════════════════════════════ -->
+<div class="page" id="p-dashboard">
+  <div class="page-header">
+    <h1>NE Fuel Terminal GTM Hub</h1>
+    <p>Your complete field reference for the Northeast fuel terminal market — prospects, playbook, competitive intel, and outreach in one place.</p>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-num">50</div><div class="stat-label">Terminal Prospects</div></div>
+    <div class="stat-card blue"><div class="stat-num">9</div><div class="stat-label">States Covered</div></div>
+    <div class="stat-card orange"><div class="stat-num">28</div><div class="stat-label">Priority A Targets</div></div>
+    <div class="stat-card green2"><div class="stat-num">4</div><div class="stat-label">OPW Product Lines</div></div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <div class="card">
+        <div class="card-title">Quick Navigation</div>
+        <div class="quick-grid">
+          <label for="r-prospects" class="qc"><h4>🗂 Prospect Directory</h4><p>50 terminals across ME, NH, VT, MA, RI, CT, NY, NJ, PA</p></label>
+          <label for="r-outreach" class="qc"><h4>📨 Outreach Sequence</h4><p>5-touch, 30-day cold outreach cadence with scripts</p></label>
+          <label for="r-playbook" class="qc"><h4>📖 Sales Playbook</h4><p>Market context, talk tracks, objection handling, CRM</p></label>
+          <label for="r-competitive" class="qc"><h4>⚔ Competitive Intel</h4><p>Head-to-head vs. Emco Wheaton, Scully, Kanon &amp; more</p></label>
+          <label for="r-capabilities" class="qc"><h4>⚙ Capabilities</h4><p>Loading arms, Lynx coupler, 8800 Series, fuel hose</p></label>
+          <label for="r-resources" class="qc"><h4>📁 Resources</h4><p>Download all 6 GTM deliverable files</p></label>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">The McGill Pitch — One Sentence</div>
+        <div class="highlight"><strong>"Most of your competitors sell hose OR loading arms. We sell both — plus the coupler, the breakaway, and the electronics. One supplier, one service relationship, one phone call."</strong></div>
+        <p style="font-size:13px;color:#718096;margin-top:10px">McGill is the <strong style="color:#1a3d25">only NE distributor</strong> that can supply a terminal's complete fluid transfer system: fuel hose → loading arm → API coupler → rack monitor.</p>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-title">Top Priority Operators</div>
+        <div class="op-grid">
+          <div class="op-card"><h4>Global Partners LP</h4><div class="op-sub">HQ: Waltham, MA</div><div class="op-detail">20+ NE terminals. One relationship = many doors. Largest NE operator.</div></div>
+          <div class="op-card"><h4>Sprague Energy</h4><div class="op-sub">HQ: Portsmouth, NH</div><div class="op-detail">6+ NE marine terminals. Heavy jet fuel &amp; distillates volume.</div></div>
+          <div class="op-card"><h4>Buckeye Terminals</h4><div class="op-sub">NJ, RI, PA</div><div class="op-detail">Largest US independent terminal operator. High compliance focus.</div></div>
+          <div class="op-card"><h4>Sunoco / Energy Transfer</h4><div class="op-sub">PA, MA, NJ</div><div class="op-detail">Marcus Hook is one of the largest fuel terminals on the East Coast.</div></div>
+          <div class="op-card"><h4>Irving Oil</h4><div class="op-sub">South Portland, ME</div><div class="op-detail">Largest single terminal in New England. Marine import.</div></div>
+          <div class="op-card"><h4>Kinder Morgan</h4><div class="op-sub">NJ, PA, NY</div><div class="op-detail">Largest pipeline/terminal company in North America. Long sales cycle.</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Pain Points We Solve</div>
+        <table class="pain-table">
+          <tr><th>Pain</th><th>McGill Answer</th></tr>
+          <tr><td>Loading arm down; trucks waiting</td><td>OPW arms + local support + stocked parts</td></tr>
+          <tr><td>Couplers leaking / failing frequently</td><td>OPW Lynx: lowest TCO, field-serviceable in 30 sec</td></tr>
+          <tr><td>Hose failures out of nowhere</td><td>Free on-site audit + correct spec replacement</td></tr>
+          <tr><td>API / OSHA compliance concerns</td><td>OPW 8800 monitors, API RP 1004 compliant</td></tr>
+          <tr><td>Multiple vendors, no accountability</td><td>Single-source terminal supplier — one call</td></tr>
+          <tr><td>Cold weather coupler / arm failures</td><td>All OPW products rated to −45°C</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PROSPECTS ═══════════════════════════════════════════════ -->
+<div class="page" id="p-prospects">
+  <div class="page-header">
+    <h1>Prospect Directory</h1>
+    <p>50 fuel terminals across 9 Northeast states — sorted by state, then priority.</p>
+  </div>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr><th>#</th><th>Company / Operator</th><th>Terminal</th><th>City</th><th>St</th><th>Products</th><th>Type</th><th>Pri</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><strong>Irving Oil</strong></td><td>South Portland Terminal</td><td>South Portland</td><td>ME</td><td>Gas, Diesel, Jet, HO</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge ba">A</span></td><td>Largest NE volume site; major marine import</td></tr>
+        <tr><td>2</td><td><strong>Sprague Energy</strong></td><td>Searsport Terminal</td><td>Searsport</td><td>ME</td><td>Distillates, Resid, Asphalt</td><td><span class="badge bm">Marine</span></td><td><span class="badge ba">A</span></td><td>Deep-water marine; Penobscot Bay</td></tr>
+        <tr><td>3</td><td><strong>Sprague Energy</strong></td><td>Portland Terminal</td><td>Portland</td><td>ME</td><td>Gas, Diesel, HO</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge ba">A</span></td><td>Key Sprague NE hub</td></tr>
+        <tr><td>4</td><td><strong>Global Partners LP</strong></td><td>South Portland Terminal</td><td>South Portland</td><td>ME</td><td>Gas, Diesel, HO, Ethanol</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge ba">A</span></td><td>Part of Global's large NE network</td></tr>
+        <tr><td>5</td><td><strong>Global Partners LP</strong></td><td>Bangor Terminal</td><td>Bangor</td><td>ME</td><td>Gas, Diesel, HO</td><td><span class="badge bp">Pipeline</span></td><td><span class="badge bb">B</span></td><td></td></tr>
+        <tr><td>6</td><td><strong>Sprague Energy</strong></td><td>Newington Terminal</td><td>Newington</td><td>NH</td><td>Gas, Diesel, Jet, HO, Ethanol</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge ba">A</span></td><td>Sprague's largest NE terminal; primary jet hub</td></tr>
+        <tr><td>7</td><td><strong>Global Partners LP</strong></td><td>Newington Terminal</td><td>Newington</td><td>NH</td><td>Gas, Diesel, HO</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge ba">A</span></td><td>Co-located on Piscataqua River with Sprague</td></tr>
+        <tr><td>8</td><td><strong>Global Partners LP</strong></td><td>Burlington Terminal</td><td>Burlington</td><td>VT</td><td>Gas, Diesel, HO</td><td><span class="badge bm">Marine/Truck</span></td><td><span class="badge bb">B</span></td><td>Lake Champlain barge access</td></tr>
+        <tr><td>9</td><td><strong>Champlain Oil</strong></td><td>Burlington Area Terminal</td><td>Burlington</td><td>VT</td><td>Gas, Diesel, HO</td><td><span class="badge bp">Pipeline</span></td><td><span class="badge bb">B</span></td><td>Regional independent operator</td></tr>
+        <tr><td>10</td><td><strong>Global Partners LP</strong></td><td>Chelsea Terminal</td><td>Chelsea</td><td>MA</td><td>Gas, Diesel, HO, Ethanol, Biodiesel</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge ba">A</span></td><td>Largest terminal complex in Boston Harbor</td></tr>
+        <tr><td>11</td><td><strong>Global Partners LP</strong></td><td>Revere Terminal</td><td>Revere</td><td>MA</td><td>Gas, Diesel, HO</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge ba">A</span></td><td>Boston Harbor; adjacent to Logan flight path</td></tr>
+        <tr><td>12</td><td><strong>Global Partners LP</strong></td><td>Lawrence Terminal</td><td>Lawrence</td><td>MA</td><td>Gas, Diesel, HO</td><td><span class="badge bp">Pipeline</span></td><td><span class="badge bb">B</span></td><td>Inland pipeline; serves Merrimack Valley</td></tr>
+        <tr><td>13</td><td><strong>Sunoco / Energy Transfer</strong></td><td>Everett Terminal</td><td>Everett</td><td>MA</td><td>Gas, Diesel, Jet, HO, LNG</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge ba">A</span></td><td>Major Boston Harbor; LNG import capability</td></tr>
+        <tr><td>14</td><td><strong>Gulf Oil LP</strong></td><td>Chelsea Terminal</td><td>Chelsea</td><td>MA</td><td>Gas, Diesel, HO</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge ba">A</span></td><td>NE operator HQ'd in Framingham, MA</td></tr>
+        <tr><td>15</td><td><strong>Motiva (Shell)</strong></td><td>Chelsea Terminal</td><td>Chelsea</td><td>MA</td><td>Gas, Diesel, Jet</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge ba">A</span></td><td>Shell-branded distribution terminal</td></tr>
+        <tr><td>16</td><td><strong>ExxonMobil</strong></td><td>Everett / Chelsea Terminal</td><td>Everett</td><td>MA</td><td>Gas, Diesel, Jet, HO</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge ba">A</span></td><td>Major Boston Harbor presence</td></tr>
+        <tr><td>17</td><td><strong>Global Partners LP</strong></td><td>Providence Terminal</td><td>Providence</td><td>RI</td><td>Gas, Diesel, HO, Ethanol</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge ba">A</span></td><td>Key Global hub on Providence River</td></tr>
+        <tr><td>18</td><td><strong>Sprague Energy</strong></td><td>Providence Terminal</td><td>Providence</td><td>RI</td><td>Gas, Diesel, HO, Residual</td><td><span class="badge bm">Marine</span></td><td><span class="badge ba">A</span></td><td>Providence River deep-water terminal</td></tr>
+        <tr><td>19</td><td><strong>Buckeye Terminals</strong></td><td>East Providence Terminal</td><td>East Providence</td><td>RI</td><td>Gas, Diesel, Jet, HO</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge ba">A</span></td><td>Part of Buckeye's NE network</td></tr>
+        <tr><td>20</td><td><strong>Global Partners LP</strong></td><td>New Haven Terminal</td><td>New Haven</td><td>CT</td><td>Gas, Diesel, HO, Ethanol</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge ba">A</span></td><td>New Haven Harbor; major CT distribution hub</td></tr>
+        <tr><td>21</td><td><strong>Global Partners LP</strong></td><td>Bridgeport Terminal</td><td>Bridgeport</td><td>CT</td><td>Gas, Diesel, HO</td><td><span class="badge bm">Marine</span></td><td><span class="badge bb">B</span></td><td>Bridgeport Harbor terminal</td></tr>
+        <tr><td>22</td><td><strong>Sprague Energy</strong></td><td>New Haven Terminal</td><td>New Haven</td><td>CT</td><td>Gas, Diesel, HO</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge ba">A</span></td><td></td></tr>
+        <tr><td>23</td><td><strong>Motiva (Shell)</strong></td><td>New Haven Terminal</td><td>New Haven</td><td>CT</td><td>Gas, Diesel</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge bb">B</span></td><td></td></tr>
+        <tr><td>24</td><td><strong>Sunoco / Energy Transfer</strong></td><td>New Haven Terminal</td><td>New Haven</td><td>CT</td><td>Gas, Diesel, HO</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge bb">B</span></td><td></td></tr>
+        <tr><td>25</td><td><strong>Global Partners LP</strong></td><td>Albany Terminal (Rensselaer)</td><td>Rensselaer</td><td>NY</td><td>Gas, Diesel, HO, Ethanol</td><td><span class="badge bm">Marine/Pipe/Rail</span></td><td><span class="badge ba">A</span></td><td>Hudson River; major inland NE hub</td></tr>
+        <tr><td>26</td><td><strong>Sprague Energy</strong></td><td>Albany Terminal</td><td>Albany</td><td>NY</td><td>Gas, Diesel, HO, Residual</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge ba">A</span></td><td>Hudson River; competes with Global</td></tr>
+        <tr><td>27</td><td><strong>NuStar Energy</strong></td><td>Albany Terminal</td><td>Albany</td><td>NY</td><td>Gas, Diesel, Ethanol</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge bb">B</span></td><td></td></tr>
+        <tr><td>28</td><td><strong>Global Partners LP</strong></td><td>Mechanicville Terminal</td><td>Mechanicville</td><td>NY</td><td>Gas, Diesel, HO</td><td><span class="badge bp">Pipeline</span></td><td><span class="badge bb">B</span></td><td></td></tr>
+        <tr><td>29</td><td><strong>Global Partners LP</strong></td><td>Newburgh Terminal</td><td>Newburgh</td><td>NY</td><td>Gas, Diesel, HO</td><td><span class="badge bm">Marine</span></td><td><span class="badge bb">B</span></td><td>Hudson River terminal</td></tr>
+        <tr><td>30</td><td><strong>Kinder Morgan</strong></td><td>Staten Island Terminal</td><td>Staten Island</td><td>NY</td><td>Gas, Diesel, Jet</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge ba">A</span></td><td>NY Harbor; major pipeline distribution point</td></tr>
+        <tr><td>31</td><td><strong>Buckeye Terminals</strong></td><td>Inwood / JFK Area Terminal</td><td>Inwood</td><td>NY</td><td>Jet, Diesel</td><td><span class="badge bp">Pipeline</span></td><td><span class="badge bb">B</span></td><td>Jet fuel supply into JFK corridor</td></tr>
+        <tr><td>32</td><td><strong>Buckeye Terminals</strong></td><td>Linden Terminal</td><td>Linden</td><td>NJ</td><td>Gas, Diesel, Jet, HO</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge ba">A</span></td><td>One of the largest terminal complexes on the East Coast</td></tr>
+        <tr><td>33</td><td><strong>ExxonMobil</strong></td><td>Bayway Terminal</td><td>Linden</td><td>NJ</td><td>Gas, Diesel, Jet, HO</td><td><span class="badge bp">Refinery/Pipe</span></td><td><span class="badge ba">A</span></td><td>Bayway Refinery terminal; massive throughput</td></tr>
+        <tr><td>34</td><td><strong>Motiva (Shell)</strong></td><td>Sewaren Terminal</td><td>Sewaren</td><td>NJ</td><td>Gas, Diesel, HO</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge ba">A</span></td><td>Arthur Kill waterway terminal</td></tr>
+        <tr><td>35</td><td><strong>Motiva (Shell)</strong></td><td>Carteret Terminal</td><td>Carteret</td><td>NJ</td><td>Gas, Diesel</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge ba">A</span></td><td></td></tr>
+        <tr><td>36</td><td><strong>Kinder Morgan</strong></td><td>Carteret Terminal</td><td>Carteret</td><td>NJ</td><td>Gas, Diesel, Ethanol</td><td><span class="badge bp">Pipeline</span></td><td><span class="badge ba">A</span></td><td>Key pipeline terminal on Arthur Kill</td></tr>
+        <tr><td>37</td><td><strong>Gulf Oil LP</strong></td><td>Linden Terminal</td><td>Linden</td><td>NJ</td><td>Gas, Diesel, HO</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge ba">A</span></td><td></td></tr>
+        <tr><td>38</td><td><strong>Sunoco / Energy Transfer</strong></td><td>Linden Terminal</td><td>Linden</td><td>NJ</td><td>Gas, Diesel, Jet</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge ba">A</span></td><td></td></tr>
+        <tr><td>39</td><td><strong>Phillips 66</strong></td><td>Linden Terminal</td><td>Linden</td><td>NJ</td><td>Gas, Diesel</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge bb">B</span></td><td></td></tr>
+        <tr><td>40</td><td><strong>PBF Logistics</strong></td><td>Paulsboro Terminal</td><td>Paulsboro</td><td>NJ</td><td>Gas, Diesel, Distillates</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge bb">B</span></td><td>Adjacent to PBF Paulsboro Refinery</td></tr>
+        <tr><td>41</td><td><strong>NGL Energy Partners</strong></td><td>Sayreville Terminal</td><td>Sayreville</td><td>NJ</td><td>Crude Oil, Condensate</td><td><span class="badge bp">Pipeline/Rail</span></td><td><span class="badge bc">C</span></td><td>Primarily crude vs. transportation fuels</td></tr>
+        <tr><td>42</td><td><strong>Sunoco / Energy Transfer</strong></td><td>Marcus Hook Terminal</td><td>Marcus Hook</td><td>PA</td><td>Gas, Diesel, Jet, HO, Ethanol</td><td><span class="badge bm">Marine/Pipe/Rail</span></td><td><span class="badge ba">A</span></td><td>One of the largest fuel terminals on the East Coast</td></tr>
+        <tr><td>43</td><td><strong>Sunoco / Energy Transfer</strong></td><td>Philadelphia Terminal</td><td>Philadelphia</td><td>PA</td><td>Gas, Diesel, HO</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge ba">A</span></td><td>Delaware River terminal complex</td></tr>
+        <tr><td>44</td><td><strong>Gulf Oil LP</strong></td><td>Philadelphia Area Terminal</td><td>Philadelphia</td><td>PA</td><td>Gas, Diesel, HO</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge bb">B</span></td><td></td></tr>
+        <tr><td>45</td><td><strong>Buckeye Terminals</strong></td><td>Allentown / Emmaus Terminal</td><td>Emmaus</td><td>PA</td><td>Gas, Diesel, HO</td><td><span class="badge bp">Pipeline</span></td><td><span class="badge bb">B</span></td><td>Inland PA; Colonial / Buckeye pipeline</td></tr>
+        <tr><td>46</td><td><strong>Buckeye Terminals</strong></td><td>Pittsburgh Terminal</td><td>Pittsburgh</td><td>PA</td><td>Gas, Diesel, Jet</td><td><span class="badge bp">Pipeline</span></td><td><span class="badge bb">B</span></td><td>Serves western PA; pipeline-connected</td></tr>
+        <tr><td>47</td><td><strong>Kinder Morgan</strong></td><td>Malvern Terminal</td><td>Malvern</td><td>PA</td><td>Gas, Diesel, HO</td><td><span class="badge bp">Pipeline</span></td><td><span class="badge bb">B</span></td><td></td></tr>
+        <tr><td>48</td><td><strong>Kinder Morgan</strong></td><td>Philadelphia Terminal</td><td>Philadelphia</td><td>PA</td><td>Gas, Diesel, Ethanol</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge ba">A</span></td><td></td></tr>
+        <tr><td>49</td><td><strong>NuStar Energy</strong></td><td>Selinsgrove Terminal</td><td>Selinsgrove</td><td>PA</td><td>Gas, Diesel, HO</td><td><span class="badge bp">Pipeline</span></td><td><span class="badge bc">C</span></td><td></td></tr>
+        <tr><td>50</td><td><strong>Citgo Petroleum</strong></td><td>Linden / Philadelphia Area</td><td>Philadelphia</td><td>PA</td><td>Gas, Diesel, HO</td><td><span class="badge bm">Marine/Pipe</span></td><td><span class="badge bb">B</span></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ OUTREACH ════════════════════════════════════════════════ -->
+<div class="page" id="p-outreach">
+  <div class="page-header">
+    <h1>Outreach Sequence</h1>
+    <p>5-touch, 30-day cold outreach cadence. Goal of every touch: get a site visit and hose audit scheduled. Don't pitch in Touch 1.</p>
+  </div>
+
+  <!-- Outreach timeline radios -->
+  <input type="radio" name="touch" id="ot-1" checked>
+  <input type="radio" name="touch" id="ot-2">
+  <input type="radio" name="touch" id="ot-3">
+  <input type="radio" name="touch" id="ot-4">
+  <input type="radio" name="touch" id="ot-5">
+  <input type="radio" name="touch" id="ot-6">
+
+  <div class="card" style="padding:16px 20px 16px">
+    <div class="touch-nav">
+      <label for="ot-1" class="touch-lbl">Day 1<br>Cold Email</label>
+      <label for="ot-2" class="touch-lbl">Day 3<br>Cold Call</label>
+      <label for="ot-3" class="touch-lbl">Day 7<br>Email #2</label>
+      <label for="ot-4" class="touch-lbl">Day 14<br>Call #2</label>
+      <label for="ot-5" class="touch-lbl">Day 21<br>Email #3</label>
+      <label for="ot-6" class="touch-lbl">Day 30+<br>Nurture</label>
+    </div>
+    <div class="touch-panels">
+      <div class="touch-panel" id="touch-1">
+        <div class="touch-card">
+          <h3>Touch 1 — Cold Email</h3>
+          <div class="touch-meta">Day 1 · Send before 9am or between 1–3pm · Keep under 120 words · Do not pitch products</div>
+          <div class="email-block"><div class="subject-line">SUBJECT: Quick question about your loading rack, [First Name]</div>Hi [First Name],
+
+My name is [Your Name] with McGill Hose &amp; Coupling — we supply fuel hose, loading arms, and API couplers to terminals across New England and the Mid-Atlantic.
+
+We're the authorized OPW Engineered Systems distributor for the region, and I'm reaching out because we offer a complimentary on-site hose and transfer system audit — we walk your rack and dock, photograph every assembly, and give you a written condition report at no cost.
+
+Would it be worth 15 minutes to connect? I'd love to learn more about [Terminal Name] and see if there's a fit.
+
+Thanks,
+[Your Name] | [Title]
+McGill Hose &amp; Coupling | [Phone] | [Email]
+
+P.S. We stock OPW Lynx couplers and 8800 Series rack monitors for the NE region.</div>
+        </div>
+      </div>
+      <div class="touch-panel" id="touch-2">
+        <div class="touch-card">
+          <h3>Touch 2 — Cold Call</h3>
+          <div class="touch-meta">Day 3 · Call mid-morning (9:30–11am) · Have voicemail script ready before you dial</div>
+          <div class="email-block"><div class="subject-line">IF THEY ANSWER — Opening</div>"Hi [First Name], this is [Name] from McGill Hose and Coupling. I sent you a quick email a couple days ago — did you get a chance to see it?"
+
+[If yes]: "Great. We supply loading arms, fuel hose, and API couplers to terminals in the NE — I was hoping to schedule a time to come out and do a quick hose audit. Do you have 15 minutes this week or next?"
+
+[If no]: "No worries — we're the OPW Engineered Systems distributor for New England, and we offer a free on-site hose inspection most terminal managers find pretty useful. Would you be open to a visit in the next couple of weeks?"</div>
+          <div class="email-block"><div class="subject-line">VOICEMAIL (30 seconds)</div>"Hi [First Name], this is [Name] from McGill Hose and Coupling — [phone].
+
+I sent you an email earlier this week. We supply loading arms, fuel hose, and API couplers to terminals across New England — we're the authorized OPW distributor for the region.
+
+I'd love to schedule a complimentary hose and rack audit at your terminal. Zero cost, takes about 90 minutes, written report included.
+
+My number again is [phone]. Thanks."</div>
+        </div>
+      </div>
+      <div class="touch-panel" id="touch-3">
+        <div class="touch-card">
+          <h3>Touch 3 — Follow-Up Email</h3>
+          <div class="touch-meta">Day 7 · Lead with a pain point · Reference something specific to their terminal type or region</div>
+          <div class="email-block"><div class="subject-line">SUBJECT: The coupler problem terminals don't see coming</div>Hi [First Name],
+
+Following up from last week — wanted to share something that might be relevant to [Terminal Name].
+
+At high-volume bottom-loading racks, couplers take 50+ connections a day. The most common failure we see isn't a blowout — it's a weakened wave spring that causes seal compression loss and slow drips. By the time it's noticeable, you've had product loss for weeks.
+
+We carry the OPW Lynx coupler, which is designed with a 3× longer wave spring and a 30-second field disassembly so your maintenance team can service it on the arm — instead of pulling the lane offline.
+
+Worth a conversation? I'm happy to bring a demo unit out when we do the hose audit.
+
+Best,
+[Your Name] | McGill Hose &amp; Coupling | [Phone]</div>
+        </div>
+      </div>
+      <div class="touch-panel" id="touch-4">
+        <div class="touch-card">
+          <h3>Touch 4 — Call #2</h3>
+          <div class="touch-meta">Day 14 · Reference the coupler email · If they answer, go straight to discovery</div>
+          <div class="email-block"><div class="subject-line">VOICEMAIL</div>"Hi [First Name] — [Name] again from McGill Hose, [phone].
+
+I know you're busy — I'll keep this quick. I sent you an email last week about coupler issues at high-volume racks. It's one of the most common things we see on hose audits, and it's usually easy to fix once we find it.
+
+I'd love to schedule 90 minutes at your terminal — no cost, written report, no pressure.
+
+[Phone] anytime. Thanks."</div>
+          <div class="email-block"><div class="subject-line">IF THEY ANSWER — Discovery Pivot</div>"Hi [First Name] — thanks for picking up. Quick question: what brand of couplers are you running on your rack right now?"
+
+[Let them answer, then:]
+
+"And how often are you replacing or rebuilding them?"
+
+[Then close for the site visit:]
+
+"It sounds like it might be worth me coming out. I can bring a Lynx demo unit and we can walk the rack together. What does your schedule look like in the next two weeks?"</div>
+        </div>
+      </div>
+      <div class="touch-panel" id="touch-5">
+        <div class="touch-card">
+          <h3>Touch 5 — Loading Arm Email</h3>
+          <div class="touch-meta">Day 21 · Shift to loading arm / OPW system angle · Position this as your last structured outreach</div>
+          <div class="email-block"><div class="subject-line">SUBJECT: When the arm goes down, the whole lane stops</div>Hi [First Name],
+
+Last note, I promise — then I'll leave you alone unless you reach out.
+
+We recently helped a terminal in the region reconfigure a loading rack that had 15+ year old arms from three different manufacturers. The incompatibility meant replacement parts were hard to source and any modification required a contractor. When we re-spec'd the system with OPW arms — all from a single manufacturer — installation took six weeks and every component was engineered to work together.
+
+If your arms are getting up there in age, it might be worth a conversation before you're forced into an emergency replacement.
+
+I'll stop following up after this — but if you'd ever like a visit or a quote, I'm at [phone] or [email].
+
+Thanks for your time,
+[Your Name] | McGill Hose &amp; Coupling
+
+P.S. We're the authorized OPW Engineered Systems distributor for New England.</div>
+        </div>
+      </div>
+      <div class="touch-panel" id="touch-6">
+        <div class="touch-card">
+          <h3>Touch 6 — LinkedIn + Long-Term Nurture</h3>
+          <div class="touch-meta">Day 30+ · If no response after 5 touches, move to passive nurture · Stay visible without pestering</div>
+          <div class="email-block"><div class="subject-line">LinkedIn Connection Note (300 char max)</div>"Hi [First Name] — I've been reaching out about fuel hose and loading arm solutions for terminals in the NE. Wanted to connect here in case the timing is better down the road. I'm at McGill Hose, OPW's authorized distributor for New England."</div>
+          <p style="font-size:13px;font-weight:600;color:#1a3d25;margin:14px 0 8px">Long-Term Nurture Touchpoints (every 60–90 days)</p>
+          <p style="font-size:13px;color:#4A5568;line-height:1.7;margin-bottom:8px">Send one value-add touchpoint — no ask attached:</p>
+          <ul style="padding-left:18px;font-size:13px;line-height:2">
+            <li>A brief note when diesel prices spike or drop significantly</li>
+            <li>An OPW product update or new product announcement</li>
+            <li>A relevant article about terminal safety or EPA compliance</li>
+            <li>A capital budget season note (Oct–Nov): "Planning your 2027 equipment spend?"</li>
+            <li>A check-in after major NE fuel supply news (storms, pipeline incidents)</li>
+          </ul>
+          <div class="info-box" style="margin-top:12px">Most terminal equipment decisions happen during annual planning (Oct–Jan). Time your nurture touches around that window.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Key Rules for Every Touch</div>
+    <div class="two-col" style="font-size:13px;gap:24px">
+      <div>
+        <div style="font-weight:700;color:#16A34A;margin-bottom:8px">✔ DO</div>
+        <ul style="padding-left:18px;line-height:2.1"><li>Personalize every [BRACKET] before sending</li><li>Keep emails under 120 words</li><li>Always ask for one specific next step</li><li>Log every touch in CRM immediately</li><li>Reference what you know about their terminal</li></ul>
+      </div>
+      <div>
+        <div style="font-weight:700;color:#B91C1C;margin-bottom:8px">✘ DON'T</div>
+        <ul style="padding-left:18px;line-height:2.1"><li>Pitch products in Touch 1</li><li>Send more than 3 emails in a week</li><li>Leave a voicemail on every call attempt</li><li>Give up after one unreturned call</li><li>Forget to record the outcome in CRM</li></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PLAYBOOK ════════════════════════════════════════════════ -->
+<div class="page" id="p-playbook">
+  <div class="page-header"><h1>Sales Playbook</h1><p>Field reference for the Terminal &amp; Transfer Systems Specialist. Read Sections 1–4 before your first prospect call.</p></div>
+
+  <div class="acc-item"><input type="checkbox" id="acc-1"><label for="acc-1" class="acc-lbl">1. The Northeast Terminal Market<span class="acc-icon">+</span></label>
+  <div class="acc-body">
+    <p><strong>What is a fuel terminal?</strong> Fuel terminals are the critical mid-to-downstream nodes in the fuel supply chain. Fuel arrives by pipeline, marine barge/tanker, or rail, is stored in above-ground tanks, and is loaded onto tank trucks for distribution to gas stations, airports, heating oil dealers, and industrial users.</p>
+    <p style="margin-top:10px">The average US terminal has 19 storage tanks. The US has 1,296 transportation fuel terminals with 911 million barrels combined capacity. The Northeast is one of the densest terminal clusters in the country, driven by port access (Boston, Providence, Albany, New York Harbor, Philadelphia, South Portland) and the Colonial and Buckeye pipeline systems.</p>
+    <div class="info-box" style="margin-top:12px"><strong>Key NE infrastructure:</strong> Colonial Pipeline (primary NE gasoline/diesel supply), Buckeye Pipeline (NE distribution), Laurel Pipeline (PA), Portland-Montreal Pipeline (ME/VT/QC). Marine import terminals handle international and Gulf Coast product via barge and tanker.</div>
+    <div class="st" style="margin-top:16px">Key Equipment at Every Terminal</div>
+    <table class="pain-table"><tr><th>Equipment</th><th>McGill Connection</th></tr>
+    <tr><td>Loading Arms</td><td>Articulated pipe assemblies on the rack. OPW Total Terminal Solutions™ is our line.</td></tr>
+    <tr><td>API Couplers</td><td>Connection point between arm and truck adaptor. OPW Lynx. Connected 50+ times/day.</td></tr>
+    <tr><td>Fuel Hose</td><td>Vapor return, emergency bypass, dock/marine, truck unloading. Core McGill product.</td></tr>
+    <tr><td>Rack Monitors</td><td>Overfill protection + ground verification. OPW 8800 Series. Required by API RP 1004.</td></tr>
+    <tr><td>Swivel Joints</td><td>Allow arms to pivot and articulate. OPW product; part of Total Terminal Solutions.</td></tr>
+    <tr><td>Breakaway Couplings</td><td>Emergency disconnect on arms and hoses. McGill core product.</td></tr></table>
+  </div></div>
+
+  <div class="acc-item"><input type="checkbox" id="acc-2"><label for="acc-2" class="acc-lbl">2. McGill's Value Proposition<span class="acc-icon">+</span></label>
+  <div class="acc-body">
+    <div class="highlight"><strong>The Pitch:</strong> Most of your competitors sell hose OR loading arms. We sell both — plus the coupler, the breakaway, and the electronics. One supplier, one service relationship, one phone call when something needs attention.</div>
+    <div class="st" style="margin-top:16px">What Makes McGill Different</div>
+    <ul style="padding-left:18px;font-size:13px;line-height:2.1">
+      <li><strong>Complete system coverage:</strong> Fuel hose, accessories, OPW loading arms, Lynx couplers, 8800 Series monitors, swivel joints, breakaways, butterfly valves.</li>
+      <li><strong>OPW partnership:</strong> Authorized OPW Engineered Systems distributor. OPW makes every type of loading arm — 100+ years in the industry.</li>
+      <li><strong>On-site support:</strong> The Specialist walks the rack, conducts hose audits, and delivers application-specific recommendations.</li>
+      <li><strong>Regional expertise:</strong> NE terminal operations, cold-weather performance, pipeline infrastructure, marine import terminals.</li>
+      <li><strong>Safety-first positioning:</strong> We understand OSHA, EPA, NFPA, and API RP 1004 requirements governing terminal operations.</li>
+    </ul>
+  </div></div>
+
+  <div class="acc-item"><input type="checkbox" id="acc-3"><label for="acc-3" class="acc-lbl">3. Product Knowledge Quick Reference<span class="acc-icon">+</span></label>
+  <div class="acc-body">
+    <div class="st">OPW Loading Arms — Total Terminal Solutions™</div>
+    <p style="font-size:13px;margin-bottom:10px">OPW is the only manufacturer of every type of loading arm in existence. Types: Torsion Spring (most common), Counterweight, Gas Strut, Vapor Return. All use OPW swivel joints, breakaways, and accessories — engineered as a system.</p>
+    <div class="highlight"><strong>Key Selling Point:</strong> A terminal with arms from 3 different vendors has an alignment and compatibility nightmare. An OPW system means every component is engineered to work together — faster installation, easier maintenance, better safety.</div>
+    <div class="st">OPW Lynx API Coupler — Key Specs</div>
+    <div class="two-col" style="font-size:13px;gap:16px"><ul style="padding-left:18px;line-height:2.1"><li><strong>U-Pin disassembly:</strong> Field-serviceable in 30 seconds. No tools.</li><li><strong>Wave spring life:</strong> 3× longer than competitors.</li><li><strong>Surge pressure:</strong> 500 psi rated.</li><li><strong>Collar:</strong> Stainless steel — resists NE road salt.</li></ul><ul style="padding-left:18px;line-height:2.1"><li><strong>4 true-interlocking latches.</strong></li><li><strong>Seal options:</strong> Viton® GFLT, Nitrile, Fluorosilicone.</li><li><strong>API RP 1004 8th Edition compliant.</strong></li><li><strong>Rated to −40°F / −40°C.</strong></li></ul></div>
+    <div class="highlight" style="margin-top:12px"><strong>Talk Track:</strong> "At 50+ connections per day, your couplers take a beating. The Lynx is designed to be serviced in the field in 30 seconds — instead of pulling the arm and losing that lane. What does an hour of downtime cost you at this rack?"</div>
+    <div class="st">OPW 8800 Series Rack Monitors</div>
+    <table class="pain-table"><tr><th>Model</th><th>Key Feature</th><th>Best For</th></tr>
+    <tr><td>8870N (Flagship)</td><td>OLED pictogram display, Smart Storage Hanger, SIL 1/2, −45°C</td><td>High-volume racks; safety upgrade projects</td></tr>
+    <tr><td>8851N</td><td>Mid-tier; field-replaceable components; multiple certifications</td><td>Mid-size terminals; retrofit projects</td></tr>
+    <tr><td>8811N</td><td>Entry-level overfill + ground verification</td><td>Budget-sensitive or lower-throughput racks</td></tr></table>
+    <p style="font-size:12px;color:#718096;margin-top:8px">All models: ATEX/IECEx/QPS approved. API RP 1004 8th Edition compliant. Compatible with all OPW arm types.</p>
+  </div></div>
+
+  <div class="acc-item"><input type="checkbox" id="acc-4"><label for="acc-4" class="acc-lbl">4. Qualifying a Terminal Prospect<span class="acc-icon">+</span></label>
+  <div class="acc-body">
+    <p style="font-size:13px;margin-bottom:12px">Use these discovery questions before offering any solutions. Ask open-ended questions — let them name the pain first.</p>
+    <table class="pain-table"><tr><th>Discovery Question</th><th>What You're Qualifying</th></tr>
+    <tr><td>"What brand of couplers are you running right now?"</td><td>Competitive situation; replacement cycle opportunity</td></tr>
+    <tr><td>"How often are you replacing or rebuilding them?"</td><td>TCO conversation opener; urgency</td></tr>
+    <tr><td>"How old are the loading arms on your rack?"</td><td>Arm replacement timeline; planned capex</td></tr>
+    <tr><td>"Have you had any hose failures or leaks in the past year?"</td><td>Safety urgency; hose audit opener</td></tr>
+    <tr><td>"What does an hour of downtime on a loading lane cost you?"</td><td>TCO framing; anchors the value conversation</td></tr>
+    <tr><td>"Who approves equipment purchases?"</td><td>Decision-maker mapping; AVL situation</td></tr>
+    <tr><td>"Are you on an approved vendor list for loading equipment?"</td><td>AVL barrier; OPW qualification process</td></tr></table>
+    <div class="info-box" style="margin-top:12px">Always close a discovery call for one next step: a site visit + hose audit. That's your foot in the door for all other product conversations.</div>
+  </div></div>
+
+  <div class="acc-item"><input type="checkbox" id="acc-5"><label for="acc-5" class="acc-lbl">5. CRM Discipline &amp; Call Logging<span class="acc-icon">+</span></label>
+  <div class="acc-body">
+    <div class="st">After Every Call or Visit, Log:</div>
+    <ul style="padding-left:18px;font-size:13px;line-height:2.1">
+      <li>Contact name, title, direct number, email</li>
+      <li>What equipment is currently on the rack (brand, age)</li>
+      <li>Pain points mentioned (coupler issues, arm age, compliance concerns)</li>
+      <li>Budget cycle / timeline for any active projects</li>
+      <li>Decision-maker map: who approves, who recommends, who blocks</li>
+      <li>Next step committed to — and date</li>
+      <li>Whether they're on an approved vendor list and what it takes to qualify</li>
+    </ul>
+    <div class="highlight" style="margin-top:12px"><strong>Rule:</strong> No call or visit without a logged next step. "They'll get back to me" is not a next step.</div>
+  </div></div>
+
+  <div class="acc-item"><input type="checkbox" id="acc-6"><label for="acc-6" class="acc-lbl">6. Handling Price Objections<span class="acc-icon">+</span></label>
+  <div class="acc-body">
+    <div class="highlight"><strong>The Frame:</strong> McGill and OPW are not the cheapest option. Win on total cost of ownership (TCO) — not price. Quantify the cost of downtime, rebuild frequency, and lane loss.</div>
+    <table class="pain-table" style="margin-top:14px"><tr><th>Objection</th><th>Your Response Frame</th></tr>
+    <tr><td>"Your couplers are more expensive."</td><td>Lynx wave spring lasts 3×. Factor in rebuild cost + lane downtime. What does 1 hr of downtime cost?</td></tr>
+    <tr><td>"We can get arms cheaper from Kanon."</td><td>Parts in 2 years? Local service? OPW has 100 years of NE parts availability. Amortize over 20-yr arm life.</td></tr>
+    <tr><td>"Motion/Grainger has the same hose cheaper."</td><td>Same hose — same pressure rating, temp range, inner tube compound? Wrong spec costs more than the hose.</td></tr></table>
+  </div></div>
+</div>
+
+<!-- ══ COMPETITIVE ═════════════════════════════════════════════ -->
+<div class="page" id="p-competitive">
+  <div class="page-header"><h1>Competitive Intelligence</h1><p>Use this before any prospect call or site visit. Know your competitor, anticipate their argument, show up with a specific answer.</p></div>
+
+  <div class="card" style="padding:16px 20px 4px">
+    <!-- Competitive tab radios -->
+    <input type="radio" name="comp" id="tc-couplers" checked>
+    <input type="radio" name="comp" id="tc-arms">
+    <input type="radio" name="comp" id="tc-monitors">
+    <input type="radio" name="comp" id="tc-hose">
+    <input type="radio" name="comp" id="tc-summary">
+
+    <div class="tab-nav">
+      <label for="tc-couplers" class="tab-lbl">API Couplers</label>
+      <label for="tc-arms" class="tab-lbl">Loading Arms</label>
+      <label for="tc-monitors" class="tab-lbl">Rack Monitors</label>
+      <label for="tc-hose" class="tab-lbl">Fuel Hose</label>
+      <label for="tc-summary" class="tab-lbl">At-a-Glance</label>
+    </div>
+
+    <div class="tab-panels">
+      <!-- COUPLERS -->
+      <div class="tab-panel" id="tp-couplers">
+        <div class="st">OPW Lynx vs. Emco Wheaton Mark 7 — Head to Head</div>
+        <table class="comp-table" style="margin-bottom:16px">
+          <tr><th>Feature</th><th>OPW Lynx ✔ (Our Product)</th><th>Emco Wheaton Mark 7</th></tr>
+          <tr><td>Field Disassembly</td><td style="color:#16A34A;font-weight:600">30 seconds — U-pin, no tools</td><td>Requires tools; sent for shop rebuild</td></tr>
+          <tr><td>Wave Spring Life</td><td style="color:#16A34A;font-weight:600">3× longer than competitive models</td><td>Standard; more frequent replacement</td></tr>
+          <tr><td>Surge Pressure</td><td style="color:#16A34A;font-weight:600">500 psi max surge</td><td>~300 psi typical</td></tr>
+          <tr><td>Collar Material</td><td style="color:#16A34A;font-weight:600">Stainless — resists NE road salt</td><td>Aluminum — can corrode in NE conditions</td></tr>
+          <tr><td>Cold Weather Rating</td><td>−40°F / −40°C</td><td>−40°F / −40°C (similar)</td></tr>
+          <tr><td>Local NE Availability</td><td style="color:#16A34A;font-weight:600">McGill Hose &amp; Coupling (stocked)</td><td>EW direct or select distributors</td></tr>
+          <tr><td>TCO</td><td style="color:#16A34A;font-weight:600">Lower — field service = no lane downtime</td><td>Higher — shop rebuilds = lane downtime</td></tr>
+        </table>
+        <div class="st">Objection Responses</div>
+        <div class="obj-card"><input type="checkbox" id="o1"><label for="o1" class="obj-lbl">vs. Emco Wheaton: "We've always used Emco. Why switch?"<span class="obj-arrow">▶</span></label>
+        <div class="obj-body"><div class="obj-type">Your Response</div><div class="obj-text">"Totally fair — Emco Wheaton is a solid product. What I'd ask is: when one of your Emco couplers goes down, how long does it take to get it rebuilt and back on the rack? The Lynx is designed so your maintenance tech can service it in 30 seconds, right on the arm. If you're sending couplers out for rebuild, you're losing that lane. Can I bring a demo unit out so you can see the disassembly yourself?"</div></div></div>
+        <div class="obj-card"><input type="checkbox" id="o2"><label for="o2" class="obj-lbl">vs. Price: "We can get couplers for half the price from another source."<span class="obj-arrow">▶</span></label>
+        <div class="obj-body"><div class="obj-type">Your Response</div><div class="obj-text">"I understand that. What's the total cost when you factor in how often you're replacing them, whether your team can service them on the arm, and the cost of lane downtime when one fails? The Lynx has a 3× longer wave spring life. I'd rather prove that than argue price on paper — can we run a comparison on your current replacement cycle vs. what Lynx's lifecycle looks like?"</div></div></div>
+        <div class="obj-card"><input type="checkbox" id="o3"><label for="o3" class="obj-lbl">vs. Civacon: "Our corporate spec says Civacon only."<span class="obj-arrow">▶</span></label>
+        <div class="obj-body"><div class="obj-type">Your Response</div><div class="obj-text">"Good news — Civacon is actually an OPW brand, same parent company as the Lynx. We can supply Civacon product as well. And in some cases, a Lynx can be substituted — let me connect you with OPW's application engineer to confirm compatibility. Either way, we can supply it through McGill."</div></div></div>
+      </div>
+
+      <!-- ARMS -->
+      <div class="tab-panel" id="tp-arms">
+        <div class="st">Competitive Landscape — Loading Arms</div>
+        <table class="comp-table" style="margin-bottom:16px">
+          <tr><th>Competitor</th><th>Their Strength</th><th>Their NE Weakness</th></tr>
+          <tr><td><strong>OPW Engineered Systems ✔</strong></td><td>Only mfr of every arm type; 100+ yr history; Total Terminal Solutions™</td><td style="color:#16A34A;font-weight:600">Opportunity: less NE brand recognition — use that as motivation</td></tr>
+          <tr><td>Emco Wheaton</td><td>Strong brand, long NE history, multiple distributors</td><td>Does not make every arm type; less application flexibility</td></tr>
+          <tr><td>Kanon Loading Equipment</td><td>Competitive pricing on large projects</td><td>Limited NE distributor support; long lead times; weak local service</td></tr>
+          <tr><td>FMC / John Crane</td><td>Marine &amp; chemical terminal strength</td><td>Less presence in petroleum truck-loading rack market</td></tr>
+          <tr><td>Legacy arms (15–25 yr)</td><td>"Still working"</td><td>Every one is a planned replacement opportunity</td></tr>
+        </table>
+        <div class="info-box">The biggest loading arm problem terminals face is NOT the arm itself — it's mixing arms from multiple manufacturers over decades. Incompatible swivels, non-standard risers, mismatched couplers. OPW's argument is system integrity: every component engineered to work together.</div>
+        <div class="st">Objection Responses</div>
+        <div class="obj-card"><input type="checkbox" id="o4"><label for="o4" class="obj-lbl">vs. Emco Arms: "We're already spec'd for Emco Wheaton on this project."<span class="obj-arrow">▶</span></label>
+        <div class="obj-body"><div class="obj-type">Your Response</div><div class="obj-text">"Can I ask what drove the Emco Wheaton spec — was it a historical relationship, a specific feature requirement, or just what's been used before? OPW makes every arm type Emco makes, and in most cases we can meet or beat the spec while providing a fully compatible system with local NE support through McGill. It's worth a 30-minute conversation before the PO goes out."</div></div></div>
+        <div class="obj-card"><input type="checkbox" id="o5"><label for="o5" class="obj-lbl">vs. Legacy Arms: "The arms are 20 years old but they still work."<span class="obj-arrow">▶</span></label>
+        <div class="obj-body"><div class="obj-type">Your Response</div><div class="obj-text">"That's great — and I wouldn't push you to replace something that's working. What I would ask is: are replacement parts still available? And do you have a plan if one fails hard? A 20-year-old arm that fails unexpectedly means an emergency replacement — 2–3× the cost of a planned one and takes longer. We can spec a replacement system on paper now so you're ready when the time comes. No cost, no commitment."</div></div></div>
+        <div class="obj-card"><input type="checkbox" id="o6"><label for="o6" class="obj-lbl">vs. Kanon: "Kanon quoted us lower on the project."<span class="obj-arrow">▶</span></label>
+        <div class="obj-body"><div class="obj-type">Your Response</div><div class="obj-text">"Kanon is a legitimate manufacturer. The questions I'd push on: what's the lead time from a European manufacturer if you need a replacement swivel in 2 years? Who's servicing it locally? OPW has a domestic parts infrastructure and McGill is your local support. When the capital cost is amortized over 20 years, that local service relationship matters a lot."</div></div></div>
+      </div>
+
+      <!-- MONITORS -->
+      <div class="tab-panel" id="tp-monitors">
+        <div class="st">OPW 8870N vs. Scully Signal ST-47</div>
+        <table class="comp-table" style="margin-bottom:16px">
+          <tr><th>Feature</th><th>OPW 8870N ✔</th><th>Scully Signal ST-47</th></tr>
+          <tr><td>Display</td><td style="color:#16A34A;font-weight:600">OLED pictogram — intuitive, multilingual</td><td>LED indicator lights — less intuitive for drivers</td></tr>
+          <tr><td>Temperature Rating</td><td style="color:#16A34A;font-weight:600">−45°C — best in class for NE winters</td><td>Standard; check spec for extreme cold</td></tr>
+          <tr><td>Safety Integrity Level</td><td style="color:#16A34A;font-weight:600">SIL 1 and SIL 2 capable</td><td>SIL 1 standard</td></tr>
+          <tr><td>Certifications</td><td>ATEX, IECEx, QPS, API RP 1004 8th Ed.</td><td>FM, CSA, API RP 1004</td></tr>
+          <tr><td>Smart Storage Hanger</td><td style="color:#16A34A;font-weight:600">Yes — auto-diagnostic on hang-up</td><td>Not standard</td></tr>
+          <tr><td>NE Install Base</td><td>Growing</td><td style="color:#B91C1C;font-weight:600">Very large legacy base — the key challenge</td></tr>
+          <tr><td>Local NE Support</td><td style="color:#16A34A;font-weight:600">McGill Hose &amp; Coupling</td><td>Scully direct; limited distributor support</td></tr>
+        </table>
+        <div class="highlight"><strong>Main Challenge:</strong> Scully Signal has an enormous legacy install base in the NE. The play is new racks, upgrades, and terminals with Scully units reaching end of life.</div>
+        <div class="st">Objection Responses</div>
+        <div class="obj-card"><input type="checkbox" id="o7"><label for="o7" class="obj-lbl">vs. Scully: "We've used Scully for 30 years. We know it works."<span class="obj-arrow">▶</span></label>
+        <div class="obj-body"><div class="obj-type">Your Response</div><div class="obj-text">"Scully is a proven system — I wouldn't argue with 30 years. What I'd ask is: when those units come up for replacement or you're adding a lane, is it worth looking at what's available now? The OPW 8870N has OLED displays that drivers understand intuitively, SIL 2 capability, and a −45°C rating that matters here in New England. Let me put specs in front of you for the next time you're adding a rack or replacing a unit."</div></div></div>
+        <div class="obj-card"><input type="checkbox" id="o8"><label for="o8" class="obj-lbl">vs. AVL: "OPW rack monitors aren't on our approved vendor list."<span class="obj-arrow">▶</span></label>
+        <div class="obj-body"><div class="obj-type">Your Response</div><div class="obj-text">"That's worth looking into together. OPW holds ATEX, IECEx, and QPS approvals — they meet or exceed the certifications most operators require. Can you share what the approval criteria are? In many cases the 8870N already qualifies. If there's a formal submission process, McGill and OPW can support that together."</div></div></div>
+      </div>
+
+      <!-- HOSE -->
+      <div class="tab-panel" id="tp-hose">
+        <div class="st">The Hose Competitive Landscape</div>
+        <p style="font-size:13px;margin-bottom:14px;color:#4A5568">Fuel hose is the most frequently replaced item at a terminal — and the most price-competitive. The key differentiators are not product but <strong>application expertise, correct spec selection, and service.</strong></p>
+        <table class="comp-table" style="margin-bottom:16px">
+          <tr><th>Competitor Type</th><th>Who They Are</th><th>Their Weakness</th></tr>
+          <tr><td>National Industrial</td><td>Motion Industries, Grainger, Brenntag</td><td>Generic reps; no terminal application expertise; no on-site audit capability</td></tr>
+          <tr><td>General Hose Shops</td><td>Regional hydraulic &amp; industrial hose shops</td><td>Often don't stock petroleum dock hose; don't know API 7K or terminal compliance specs</td></tr>
+          <tr><td>Manufacturer Direct</td><td>Continental, Parker, Alfagomma, Trelleborg</td><td>No assembly; no local inventory; no service relationship; no accessories</td></tr>
+          <tr><td>Specialty Petroleum</td><td>Civacon-focused distributors, OPW direct</td><td>Often lack the full hose + arm + electronics story McGill can tell</td></tr>
+        </table>
+        <div class="highlight"><strong>McGill's Real Differentiator:</strong> Nobody else in the NE is walking into terminals, auditing hoses, writing condition reports, and pairing that service with a loading arm conversation.</div>
+        <div class="st">Objection Responses</div>
+        <div class="obj-card"><input type="checkbox" id="o9"><label for="o9" class="obj-lbl">vs. Grainger/Motion: "We buy our hose from Motion. It's easier."<span class="obj-arrow">▶</span></label>
+        <div class="obj-body"><div class="obj-type">Your Response</div><div class="obj-text">"Totally understand the convenience angle. Can I ask — do you know if the hose they're sending you is rated for your specific products? ULSD, ethanol blends, and biodiesel all have different chemical compatibility requirements. I've walked terminals where the hose on the dock was rated for gasoline but they were running diesel through it. Not a problem until it is. I'd love to do a quick walk and make sure everything's specced correctly — no cost."</div></div></div>
+        <div class="obj-card"><input type="checkbox" id="o10"><label for="o10" class="obj-lbl">vs. Price: "A competitor quoted us the same hose for less."<span class="obj-arrow">▶</span></label>
+        <div class="obj-body"><div class="obj-type">Your Response</div><div class="obj-text">"Are you comparing the same hose? Part number, pressure rating, temperature range, static wire continuity? Sometimes what looks like the same product has a different inner tube compound or cover. If it's truly apples-to-apples and they're lower, I want to know that too — and I'll tell you honestly if we can be competitive. What's the part number they quoted you?"</div></div></div>
+      </div>
+
+      <!-- SUMMARY -->
+      <div class="tab-panel" id="tp-summary">
+        <div class="st">At-a-Glance Competitive Summary</div>
+        <table class="comp-table" style="margin-bottom:20px">
+          <tr><th>Category</th><th>Main Rival</th><th>Their Strength</th><th>Our Winning Argument</th></tr>
+          <tr><td>API Coupler</td><td>Emco Wheaton Mark 7</td><td>Strong brand, long NE history</td><td>Lynx: 30-sec field service, 3× wave spring life, stainless collar for NE salt/cold</td></tr>
+          <tr><td>API Coupler</td><td>Generic imports</td><td>40–60% lower unit price</td><td>TCO: faster failure, no field service, lane downtime costs more than price difference</td></tr>
+          <tr><td>Loading Arms</td><td>Emco Wheaton</td><td>Most recognized arm brand in NE</td><td>OPW: only mfr of every arm type; system compatibility; local McGill support</td></tr>
+          <tr><td>Loading Arms</td><td>Kanon / imports</td><td>Low capital cost</td><td>Parts availability, lead time, lifecycle support — OPW + McGill are local</td></tr>
+          <tr><td>Loading Arms</td><td>Legacy arms (15–25 yr)</td><td>"Still working"</td><td>Planned replacement avoids emergency downtime; capex vs. opex story</td></tr>
+          <tr><td>Rack Monitor</td><td>Scully Signal</td><td>Enormous legacy NE install base</td><td>8870N: OLED display, SIL 1/2, −45°C rated, Smart Storage Hanger</td></tr>
+          <tr><td>Fuel Hose</td><td>Motion / Grainger</td><td>Online ordering, national accounts</td><td>Correct spec, on-site audit, assembly, terminal expertise they can't offer</td></tr>
+          <tr><td>Full System</td><td>Any single-category competitor</td><td>Depth in one product</td><td>McGill + OPW = arms + couplers + hose + monitors. One supplier, one call.</td></tr>
+        </table>
+        <div class="st">5 Golden Rules for Competitive Conversations</div>
+        <ul class="rules-list">
+          <li><div><strong>Never trash a competitor.</strong> Acknowledge their strengths, then pivot to where you win.</div></li>
+          <li><div><strong>Ask about their current experience first.</strong> Let them name the pain before you offer the solution.</div></li>
+          <li><div><strong>TCO beats unit price every time.</strong> Quantify the cost of downtime, rebuild frequency, and lane loss.</div></li>
+          <li><div><strong>Bring proof.</strong> A demo Lynx coupler, a spec sheet comparison, a case study. Don't just assert — show.</div></li>
+          <li><div><strong>The system story is your unique weapon.</strong> No competitor can match McGill's arms + hose + coupler + monitor offering in the NE.</div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CAPABILITIES ════════════════════════════════════════════ -->
+<div class="page" id="p-capabilities">
+  <div class="page-header"><h1>Products &amp; Capabilities</h1><p>McGill's complete terminal product portfolio. Authorized OPW Engineered Systems Distributor for the Northeast.</p></div>
+  <div class="product-grid">
+    <div class="product-card"><div class="pc-header"><h3>OPW Loading Arms</h3><div class="pc-sub">Total Terminal Solutions™</div></div>
+    <div class="pc-body"><strong>Types available:</strong><ul><li>Torsion Spring (most common truck rack)</li><li>Counterweight Arms</li><li>Gas Strut Arms</li><li>Vapor Return Arms</li></ul><p style="margin-top:8px">Complete systems include risers, swivel joints, couplers, breakaways — all OPW. 100+ years of engineering.</p><div class="win-box">Only manufacturer of every arm type in existence. System compatibility = no mix-and-match headaches.</div></div></div>
+    <div class="product-card"><div class="pc-header"><h3>OPW Lynx Coupler</h3><div class="pc-sub">Bottom-Loading API Coupler</div></div>
+    <div class="pc-body"><ul><li>30-sec field disassembly (U-pin design)</li><li>3× wave spring life vs. competitors</li><li>500 psi surge pressure rated</li><li>Stainless steel collar — NE salt/cold resistant</li><li>4 true-interlocking stainless latches</li><li>Viton®, Nitrile, Fluorosilicone seal options</li><li>API RP 1004 8th Edition compliant</li><li>Rated to −40°F / −40°C</li></ul><div class="win-box">Lowest TCO coupler on the market. Field-serviceable = no lane downtime for rebuilds.</div></div></div>
+    <div class="product-card"><div class="pc-header"><h3>OPW 8800 Series</h3><div class="pc-sub">Rack Safety Monitors</div></div>
+    <div class="pc-body"><strong>Models:</strong><ul><li><strong>8870N:</strong> OLED display, SIL 1/2, Smart Hanger, −45°C</li><li><strong>8851N:</strong> Mid-tier; field-replaceable components</li><li><strong>8811N:</strong> Entry-level overfill + ground verification</li></ul><p style="margin-top:8px">All models: ATEX/IECEx/QPS certified. API RP 1004 8th Edition compliant.</p><div class="win-box">OLED + SIL 2 + −45°C = strongest spec in its class for NE winter conditions.</div></div></div>
+    <div class="product-card"><div class="pc-header"><h3>Fuel Hose &amp; Dock Hose</h3><div class="pc-sub">McGill Core Product</div></div>
+    <div class="pc-body"><ul><li>Petroleum dock hose (API 7K / EN 1765)</li><li>Tank truck loading &amp; unloading hose</li><li>Vapor recovery hose</li><li>Composite &amp; PTFE specialty hose</li><li>Compatible: Gas, ULSD, Ethanol, Biodiesel, Jet, HO</li></ul><div class="win-box">Free on-site hose audits — walk the rack, photograph assemblies, deliver written condition report.</div></div></div>
+    <div class="product-card"><div class="pc-header"><h3>API Couplings &amp; Accessories</h3><div class="pc-sub">Connections &amp; Safety Devices</div></div>
+    <div class="pc-body"><ul><li>API dry-break couplings &amp; adapters</li><li>Emergency breakaway couplings</li><li>OPW swivel joints (intermediate, drop, apex)</li><li>Butterfly valves &amp; sight glasses</li><li>Vapor couplers for vapor recovery systems</li></ul><div class="win-box">Full accessory line = single PO covers the complete rack assembly.</div></div></div>
+    <div class="product-card"><div class="pc-header"><h3>The Free Hose Audit</h3><div class="pc-sub">Your Primary Door-Opener</div></div>
+    <div class="pc-body"><p>The complimentary on-site hose and transfer system audit is the primary sales entry point for new accounts.</p><ul style="margin-top:8px"><li>Walk the rack and dock with terminal team</li><li>Photograph every hose assembly</li><li>Check specs against products handled</li><li>Identify wear, incorrect spec, compliance gaps</li><li>Deliver written condition report</li></ul><div class="win-box">~90 minutes on site. No cost. Opens every other product conversation.</div></div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Compliance &amp; Certifications Reference</div>
+    <div class="two-col" style="font-size:13px;gap:20px">
+      <div><div style="font-weight:700;color:#1a3d25;margin-bottom:8px">Standards Governing Terminal Operations</div><ul style="padding-left:18px;line-height:2.1"><li><strong>API RP 1004 8th Ed.</strong> — Bottom loading &amp; vapor recovery. Required for rack monitors and couplers.</li><li><strong>OSHA PSM (29 CFR 1910.119)</strong> — Process safety management for hazardous chemicals.</li><li><strong>EPA SPCC (40 CFR Part 112)</strong> — Spill prevention, control, and countermeasure plans.</li><li><strong>NFPA 30</strong> — Flammable and combustible liquids code.</li></ul></div>
+      <div><div style="font-weight:700;color:#1a3d25;margin-bottom:8px">OPW Product Certifications</div><ul style="padding-left:18px;line-height:2.1"><li><strong>ATEX</strong> — European explosive atmosphere directive.</li><li><strong>IECEx</strong> — International explosive atmospheres certification.</li><li><strong>QPS</strong> — North American hazardous locations standard.</li><li><strong>SIL 1 / SIL 2</strong> — Safety Integrity Level rating (8870N).</li><li><strong>API RP 1004 8th Ed.</strong> — All Lynx and 8800 Series products.</li></ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ RESOURCES ═══════════════════════════════════════════════ -->
+<div class="page" id="p-resources">
+  <div class="page-header"><h1>Resources</h1><p>All NE Terminal GTM deliverables. Files are saved in the same folder as this site.</p></div>
+  <div class="card">
+    <ul class="res-list">
+      <li><div class="res-icon" style="background:#D1FAE5">📊</div><div class="res-info"><h4>NE_Terminal_Prospects.xlsx</h4><p>50 terminal prospects across 9 states · 3 tabs: Prospects, Key Operators, Outreach Tracker</p></div></li>
+      <li><div class="res-icon" style="background:#DBEAFE">📄</div><div class="res-info"><h4>NE_Terminal_Sales_Playbook.docx</h4><p>8-section field reference · Market context, talk tracks, objection handling, CRM discipline</p></div></li>
+      <li><div class="res-icon" style="background:#DBEAFE">📄</div><div class="res-info"><h4>NE_Terminal_Capabilities_OnePager.docx</h4><p>Landscape one-pager for leave-behinds · Products, pain points, value proposition, contact CTA</p></div></li>
+      <li><div class="res-icon" style="background:#DBEAFE">📄</div><div class="res-info"><h4>NE_Terminal_Outreach_Sequence.docx</h4><p>5-touch, 30-day cold outreach cadence · Email scripts, call scripts, voicemail templates</p></div></li>
+      <li><div class="res-icon" style="background:#FEE2E2">📑</div><div class="res-info"><h4>NE_Terminal_Capabilities_Deck.pptx</h4><p>10-slide capabilities presentation · For prospect meetings and trade show follow-up</p></div></li>
+      <li><div class="res-icon" style="background:#DBEAFE">📄</div><div class="res-info"><h4>NE_Terminal_Competitive_Intelligence.docx</h4><p>Full competitive guide · Head-to-head comparisons, objection responses, 5 golden rules</p></div></li>
+    </ul>
+  </div>
+  <div class="contact-block">
+    <h3>NE Terminal Specialist — Field Reference</h3>
+    <p>This hub is your daily field companion. Open it before every call, use the Competitive Intel section to prep for specific accounts, and use the Outreach Sequence scripts word-for-word. Personalize the brackets and go.</p>
+    <p style="margin-top:8px">Questions on OPW products or application support? McGill can connect you directly with OPW's application engineering team for specification review on loading arm and monitor projects.</p>
+  </div>
+</div>
+
+</div><!-- end #main -->
+</div><!-- end #app -->
+</body>
+</html>
