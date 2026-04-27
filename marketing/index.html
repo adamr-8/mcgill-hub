@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>McGill Hub — Marketing</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="icon" href="../assets/McGill-Hose-Logo-white-vector-square.png">
   <style>
     :root {
@@ -43,38 +43,114 @@
     .page-header p { font-size: 15px; color: rgba(255,255,255,.7); margin-top: 8px; }
 
     .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
-    .section-header { margin: 40px 0 16px; }
-    .section-header h2 { font-size: 22px; font-weight: 700; color: var(--dark); letter-spacing: -0.02em; }
+    .section-header { margin: 48px 0 16px; }
+    .section-header h2 { font-size: 24px; font-weight: 700; color: var(--gold); letter-spacing: -0.02em; }
+    .section-header .section-num { font-size: 24px; font-weight: 700; color: var(--gold); }
     .section-header p { font-size: 13px; color: var(--gray); margin-top: 4px; }
 
-    /* ── Brand Guide Section ── */
+    /* ── Brand Section Containers ── */
     .brand-section {
       background: var(--white); border: 1px solid var(--border); border-radius: 12px;
       padding: 32px; margin-bottom: 24px;
     }
     .brand-section h3 { font-size: 18px; font-weight: 700; color: var(--dark); margin-bottom: 16px; }
 
-    /* Color swatches */
-    .color-groups { display: flex; flex-direction: column; gap: 20px; }
-    .color-group-label { font-size: 11px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: .04em; }
-    .color-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
-    .swatch { width: 120px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); background: var(--white); }
-    .swatch-block { height: 56px; }
-    .swatch-info { padding: 8px 10px; }
-    .swatch-info .name { font-size: 11px; font-weight: 600; color: var(--dark); }
-    .swatch-info .hex { font-size: 10px; color: var(--gray); font-family: monospace; }
+    /* ── Typography Table ── */
+    .type-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 24px; }
+    .type-table th {
+      text-align: left; font-size: 10px; font-weight: 700; color: var(--gray);
+      text-transform: uppercase; letter-spacing: .04em;
+      padding: 8px 10px; border-bottom: 2px solid var(--border); background: var(--tan);
+    }
+    .type-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); }
+    .type-table .style-name { font-weight: 700; color: var(--deep-green); }
+    .type-table-header { background: var(--dark-green); color: var(--white); padding: 8px 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; border-radius: 4px 4px 0 0; margin-top: 16px; }
+    .usage-notes { background: var(--tan); border-radius: 8px; padding: 16px 20px; margin-top: 16px; }
+    .usage-notes h4 { font-size: 13px; font-weight: 700; color: var(--dark); margin-bottom: 8px; }
+    .usage-notes p { font-size: 12px; color: var(--text); line-height: 1.6; margin-bottom: 4px; }
 
-    /* Type samples */
-    .type-showcase { margin-top: 16px; }
-    .type-row { margin-bottom: 16px; }
-    .type-label { font-size: 10px; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 2px; }
-    .type-xl { font-size: 36px; font-weight: 800; color: var(--dark); letter-spacing: -0.03em; }
-    .type-lg { font-size: 24px; font-weight: 700; color: var(--dark); }
-    .type-md { font-size: 16px; font-weight: 600; color: var(--dark); }
-    .type-sm { font-size: 14px; color: var(--text); line-height: 1.6; }
-    .type-meta { font-size: 10px; color: var(--gray); margin-top: 2px; }
+    /* ── Type Specimens ── */
+    .type-specimens { display: flex; gap: 40px; margin-bottom: 24px; align-items: baseline; }
+    .type-specimen { text-align: center; }
+    .type-specimen .sample { font-size: 48px; color: var(--dark); margin-bottom: 4px; }
+    .type-specimen .sample.light { font-weight: 300; }
+    .type-specimen .sample.regular { font-weight: 400; }
+    .type-specimen .sample.bold { font-weight: 700; }
+    .type-specimen .label { font-size: 11px; color: var(--gray); }
 
-    /* ── Asset/Tool Cards ── */
+    /* ── Color Swatches ── */
+    .color-group-label { font-size: 20px; font-weight: 700; color: var(--gold); margin: 24px 0 12px; }
+    .color-group-label:first-child { margin-top: 0; }
+    .color-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 8px; }
+    .swatch { border-radius: 10px; overflow: hidden; border: 1px solid var(--border); background: var(--white); }
+    .swatch-block { height: 80px; display: flex; align-items: flex-end; padding: 8px 12px; }
+    .swatch-block .hex-overlay { font-size: 12px; font-weight: 600; padding: 2px 6px; border-radius: 3px; }
+    .swatch-block .hex-overlay.on-dark { color: rgba(255,255,255,.9); }
+    .swatch-block .hex-overlay.on-light { color: rgba(0,0,0,.6); }
+    .swatch-info { padding: 10px 12px; }
+    .swatch-info .name { font-size: 12px; font-weight: 600; color: var(--dark); }
+    .swatch-info .hex { font-size: 11px; color: var(--gray); font-family: monospace; }
+    .swatch-info .wcag { font-size: 10px; color: var(--gray); margin-top: 2px; }
+
+    /* ── Logo Gallery ── */
+    .logo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+    .logo-card { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--white); }
+    .logo-preview { height: 120px; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .logo-preview img { max-height: 72px; max-width: 80%; object-fit: contain; }
+    .logo-info { padding: 12px 16px; border-top: 1px solid var(--border); }
+    .logo-info h4 { font-size: 13px; font-weight: 700; color: var(--dark); }
+    .logo-info p { font-size: 11px; color: var(--gray); margin-top: 2px; }
+
+    /* Logo Guidelines Table */
+    .guidelines-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 16px; }
+    .guidelines-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .guidelines-table td:first-child { font-weight: 700; color: var(--deep-green); width: 140px; }
+
+    /* ── Certification Tiers ── */
+    .tier-header {
+      background: var(--gold); color: var(--white); padding: 8px 16px;
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+      border-radius: 8px 8px 0 0; margin-top: 20px;
+    }
+    .tier-header:first-child { margin-top: 0; }
+    .cert-card {
+      background: var(--white); border: 1px solid var(--border); border-top: none;
+      padding: 16px 20px; display: flex; align-items: center; gap: 20px;
+    }
+    .cert-card:last-child { border-radius: 0 0 8px 8px; }
+    .cert-badge { width: 80px; height: 60px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .cert-badge img { max-height: 50px; max-width: 70px; object-fit: contain; }
+    .cert-card h4 { font-size: 14px; font-weight: 700; color: var(--dark); }
+    .cert-card h4 span { font-weight: 400; color: var(--gray); }
+    .cert-card p { font-size: 12px; color: var(--text); line-height: 1.5; margin-top: 2px; }
+
+    /* ── Placement Section ── */
+    .placement-grid { display: flex; flex-direction: column; gap: 12px; }
+    .placement-row {
+      background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px;
+    }
+    .placement-row h4 { font-size: 14px; font-weight: 700; color: var(--dark); }
+    .placement-row h4 span { font-size: 12px; font-weight: 500; color: var(--gray); margin-left: 8px; }
+    .placement-row p { font-size: 12px; color: var(--text); margin-top: 4px; line-height: 1.5; }
+    .placement-row .impact {
+      display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px;
+      border-radius: 8px; margin-top: 6px;
+    }
+    .impact.high { background: rgba(200,50,50,.1); color: #c03232; }
+    .impact.critical { background: rgba(200,50,50,.15); color: #a02020; }
+    .impact.medium { background: rgba(197,168,78,.15); color: var(--brown); }
+    .impact.baseline { background: rgba(129,131,133,.1); color: var(--gray); }
+
+    /* Footer badge strip */
+    .footer-badges {
+      background: var(--dark-green); border-radius: 8px; padding: 20px 24px; margin-top: 16px;
+      display: flex; align-items: center; justify-content: center; gap: 32px; flex-wrap: wrap;
+    }
+    .footer-badges .fb-item { text-align: center; }
+    .footer-badges img { height: 40px; filter: brightness(0) invert(1); opacity: .8; }
+    .footer-badges .fb-label { font-size: 9px; color: rgba(255,255,255,.5); margin-top: 4px; }
+
+    /* ── Tool Cards ── */
     .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
     .card {
       background: var(--white); border: 1px solid var(--border); border-radius: 10px;
@@ -93,31 +169,6 @@
     .card-tag.pdf { background: rgba(200,50,50,.1); color: #c03232; }
     .card-tag.html { background: rgba(0,120,212,.08); color: #005a9e; }
 
-    /* ── Logo Gallery ── */
-    .logo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-    .logo-card {
-      border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--white);
-    }
-    .logo-preview {
-      height: 100px; display: flex; align-items: center; justify-content: center; padding: 16px;
-    }
-    .logo-preview img { max-height: 64px; max-width: 80%; object-fit: contain; }
-    .logo-preview.on-dark { background: var(--dark-green); }
-    .logo-preview.on-light { background: var(--white); }
-    .logo-info { padding: 10px 14px; border-top: 1px solid var(--border); }
-    .logo-info h4 { font-size: 12px; font-weight: 600; color: var(--dark); }
-    .logo-info p { font-size: 10px; color: var(--gray); }
-
-    /* ── Cert Tiers ── */
-    .cert-list { display: flex; flex-direction: column; gap: 12px; }
-    .cert-row {
-      background: var(--white); border: 1px solid var(--border); border-radius: 10px;
-      padding: 16px 20px; display: flex; align-items: center; gap: 16px;
-    }
-    .cert-tier { font-size: 24px; font-weight: 800; color: var(--green); width: 40px; text-align: center; }
-    .cert-row h4 { font-size: 13px; font-weight: 600; color: var(--dark); }
-    .cert-row p { font-size: 11px; color: var(--gray); }
-
     footer {
       background: var(--dark-green); margin-top: 64px; padding: 32px 24px;
       text-align: center; border-top: 3px solid var(--gold);
@@ -125,9 +176,9 @@
     footer p { font-size: 12px; color: rgba(255,255,255,.4); }
 
     @media (max-width: 768px) {
-      .logo-grid { grid-template-columns: 1fr 1fr; }
-      .color-row { flex-direction: column; }
-      .swatch { width: 100%; }
+      .logo-grid { grid-template-columns: 1fr; }
+      .color-row { grid-template-columns: 1fr 1fr; }
+      .type-specimens { flex-direction: column; gap: 16px; }
     }
   </style>
 </head>
@@ -148,7 +199,7 @@
   <section class="page-header">
     <div class="inner">
       <h1>Marketing</h1>
-      <p>Brand assets, guidelines, templates, and tools for the marketing team.</p>
+      <p>McGill Brand Guide v3.8 &middot; UI Style Guide &middot; 2026 &middot; Confidential &middot; For internal and partner use only</p>
     </div>
   </section>
 
@@ -165,126 +216,349 @@
         <p>Convert Danfoss PDFs into McGill-branded Avery 94216 bin labels. Supports custom logos for affiliates.</p>
         <span class="card-tag live">Live Tool</span>
       </a>
-      <a href="#brand-guide" class="card">
+      <a href="#typography" class="card">
         <span class="card-icon">📖</span>
-        <h3>Brand Guide</h3>
-        <p>Typography, colors, logo usage, and certification badge guidelines — all on this page below.</p>
-        <span class="card-tag pdf">v3.8</span>
+        <h3>Brand Guide v3.8</h3>
+        <p>Full typography specs, color palette with WCAG ratios, logo usage, certifications, and trust signal placement.</p>
+        <span class="card-tag pdf">Below</span>
       </a>
-      <a href="#assets" class="card">
-        <span class="card-icon">📁</span>
-        <h3>Asset Library</h3>
-        <p>McGill logos, partner badges, and email templates available for download.</p>
-        <span class="card-tag html">Files</span>
+      <a href="#email-templates" class="card">
+        <span class="card-icon">📧</span>
+        <h3>Email Templates</h3>
+        <p>7 Oro Commerce transactional templates — welcome, order, shipping, cart, RFQ, invoice, password.</p>
+        <span class="card-tag html">Reference</span>
       </a>
     </div>
 
-    <!-- Brand Guide -->
-    <div id="brand-guide" class="section-header" style="margin-top: 48px;">
-      <h2>Brand Guide</h2>
-      <p>McGill Brand Guide v3.8 — the source of truth for all visual identity.</p>
+    <!-- ═══════════════════════════════════════════════
+         01 / TYPOGRAPHY
+         Source: McGill_Brand_Guide_v3.8.pdf, Page 2
+         ═══════════════════════════════════════════════ -->
+    <div id="typography" class="section-header">
+      <h2>01 / Typography</h2>
+      <p>Primary typeface: Inter (Google Fonts). Available in Light, Regular, and Bold weights.</p>
     </div>
 
-    <!-- Typography -->
     <div class="brand-section">
-      <h3>Typography</h3>
-      <p style="font-size:14px; color: var(--text); margin-bottom: 20px;">Inter is the McGill brand typeface across all materials — digital, print, ecommerce, and email.</p>
-      <div class="type-showcase">
-        <div class="type-row">
-          <div class="type-label">Display</div>
-          <div class="type-xl">McGill Hose & Coupling</div>
-          <div class="type-meta">Inter ExtraBold (800) · 36–48px · -0.03em</div>
+      <!-- Specimens -->
+      <div class="type-specimens">
+        <div class="type-specimen">
+          <div class="sample light">Aa123</div>
+          <div class="label">Inter Light</div>
         </div>
-        <div class="type-row">
-          <div class="type-label">Heading</div>
-          <div class="type-lg">Industrial Hose Solutions</div>
-          <div class="type-meta">Inter Bold (700) · 24–28px · -0.02em</div>
+        <div class="type-specimen">
+          <div class="sample regular">Aa123</div>
+          <div class="label">Inter Regular</div>
         </div>
-        <div class="type-row">
-          <div class="type-label">Subheading</div>
-          <div class="type-md">Engineered for Performance</div>
-          <div class="type-meta">Inter SemiBold (600) · 16–18px</div>
+        <div class="type-specimen">
+          <div class="sample bold">Aa123</div>
+          <div class="label">Inter Bold</div>
         </div>
-        <div class="type-row">
-          <div class="type-label">Body</div>
-          <div class="type-sm">McGill Hose & Coupling has been serving industrial, aerospace, and commercial markets for over 60 years. We provide engineered hose assemblies, couplings, fittings, and related accessories.</div>
-          <div class="type-meta">Inter Regular (400) · 14–16px · 1.5–1.6 line-height</div>
+      </div>
+
+      <!-- Header Styles Table -->
+      <div class="type-table-header">Header Styles</div>
+      <table class="type-table">
+        <thead>
+          <tr><th>Style</th><th>Weight</th><th>Desktop</th><th>Mobile</th><th>Line</th><th>Spacing</th><th>Color</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="style-name">Display</td><td>Bold</td><td>120px</td><td>60px</td><td>100%</td><td>-2%</td><td>#094A27 (Medium Green)</td></tr>
+          <tr><td class="style-name">XXL Header</td><td>Bold</td><td>72px</td><td>42px</td><td>100%</td><td>-2%</td><td>#094A27 (Medium Green)</td></tr>
+          <tr><td class="style-name">XL Header</td><td>Bold</td><td>60px</td><td>38px</td><td>100%</td><td>-2%</td><td>#094A27 (Medium Green)</td></tr>
+          <tr><td class="style-name">L Header</td><td>Bold</td><td>48px</td><td>32px</td><td>100%</td><td>-2%</td><td>#094A27 (Medium Green)</td></tr>
+          <tr><td class="style-name">M Header</td><td>Bold</td><td>36px</td><td>26px</td><td>100%</td><td>-2%</td><td>#094A27 (Medium Green)</td></tr>
+          <tr><td class="style-name">S Header</td><td>Bold</td><td>24px</td><td>20px</td><td>100%</td><td>-2%</td><td>#094A27 (Medium Green)</td></tr>
+          <tr><td class="style-name">XS Header</td><td>Bold</td><td>20px</td><td>18px</td><td>100%</td><td>-2%</td><td>#094A27 (Medium Green)</td></tr>
+          <tr><td class="style-name">XXS Header</td><td>Bold</td><td>18px</td><td>16px</td><td>100%</td><td>-2%</td><td>#094A27 (Medium Green)</td></tr>
+          <tr><td class="style-name">Label</td><td>Bold</td><td>14px</td><td>12px</td><td>100%</td><td>1%</td><td>#296A3C (Green)</td></tr>
+        </tbody>
+      </table>
+
+      <!-- Body & Sub Header Styles Table -->
+      <div class="type-table-header">Body &amp; Sub Header Styles</div>
+      <table class="type-table">
+        <thead>
+          <tr><th>Style</th><th>Weight</th><th>Desktop</th><th>Mobile</th><th>Line</th><th>Spacing</th><th>Color</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="style-name">Sub Header</td><td>Light</td><td>24px</td><td>20px</td><td>140%</td><td>0%</td><td>#3C3F44 (Dark Gray)</td></tr>
+          <tr><td class="style-name">Body 18pt</td><td>Regular</td><td>18px</td><td>16px</td><td>140%</td><td>0%</td><td>#3C3F44 (Dark Gray)</td></tr>
+          <tr><td class="style-name">Body 16pt</td><td>Regular</td><td>16px</td><td>14px</td><td>140%</td><td>0%</td><td>#3C3F44 (Dark Gray)</td></tr>
+          <tr><td class="style-name">Body 14pt</td><td>Regular</td><td>14px</td><td>12px</td><td>140%</td><td>0%</td><td>#3C3F44 (Dark Gray)</td></tr>
+        </tbody>
+      </table>
+
+      <!-- Usage Notes -->
+      <div class="usage-notes">
+        <h4>Usage Notes</h4>
+        <p>Headers use 100% line-height with -2% letter-spacing for tight, impactful display.</p>
+        <p>Labels use 1% letter-spacing for improved readability at small sizes.</p>
+        <p>Sub headers and body text use 140% line-height for comfortable reading.</p>
+        <p>Header color (#094A27) provides strong contrast against light backgrounds.</p>
+        <p>Label color (#296A3C) differentiates labels from headers visually.</p>
+        <p>Body color (#3C3F44) ensures readability without harsh contrast.</p>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         02 / COLOR PALETTE
+         Source: McGill_Brand_Guide_v3.8.pdf, Page 3
+         ═══════════════════════════════════════════════ -->
+    <div class="section-header">
+      <h2>02 / Color Palette</h2>
+      <p>All colors tested for WCAG contrast compliance. Ratios measured against white text on color.</p>
+    </div>
+
+    <div class="brand-section">
+      <div class="color-group-label">Primary</div>
+      <div class="color-row">
+        <div class="swatch">
+          <div class="swatch-block" style="background:#296A3C;"><span class="hex-overlay on-dark">296A3C</span></div>
+          <div class="swatch-info"><div class="name">Green</div><div class="hex">Hex: #296A3C</div><div class="wcag">WCAG: AA / 6.51:1</div></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-block" style="background:#F1F2EA;"><span class="hex-overlay on-light">F1F2EA</span></div>
+          <div class="swatch-info"><div class="name">Light Tan</div><div class="hex">Hex: #F1F2EA</div><div class="wcag">WCAG: AAA / 18.62:1</div></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-block" style="background:#10312B;"><span class="hex-overlay on-dark">10312B</span></div>
+          <div class="swatch-info"><div class="name">Dark Green</div><div class="hex">Hex: #10312B</div><div class="wcag">WCAG: AAA / 14.03</div></div>
+        </div>
+      </div>
+
+      <div class="color-group-label">Secondary</div>
+      <div class="color-row">
+        <div class="swatch">
+          <div class="swatch-block" style="background:#094A27;"><span class="hex-overlay on-dark">094A27</span></div>
+          <div class="swatch-info"><div class="name">Med. Green</div><div class="hex">Hex: #094A27</div><div class="wcag">WCAG: AAA / 10.39:1</div></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-block" style="background:#F1F2EA;"><span class="hex-overlay on-light">F1F2EA</span></div>
+          <div class="swatch-info"><div class="name">Light Tan</div><div class="hex">Hex: #F1F2EA</div><div class="wcag">WCAG: AAA / 16.34:1</div></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-block" style="background:#80693C;"><span class="hex-overlay on-dark">80693C</span></div>
+          <div class="swatch-info"><div class="name">Light Gold</div><div class="hex">Hex: #80693C</div><div class="wcag">WCAG: AAA / 11.98:1</div></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-block" style="background:#C5A84E;"><span class="hex-overlay on-dark">C5A84E</span></div>
+          <div class="swatch-info"><div class="name">Gold</div><div class="hex">Hex: #C5A84E</div><div class="wcag">WCAG: AA / 5.24:1</div></div>
+        </div>
+      </div>
+
+      <div class="color-group-label">Neutrals</div>
+      <div class="color-row">
+        <div class="swatch">
+          <div class="swatch-block" style="background:#FFFFFF; border-bottom: 1px solid #e0e0e0;"><span class="hex-overlay on-light">FFFFFF</span></div>
+          <div class="swatch-info"><div class="name">White</div><div class="hex">Hex: #FFFFFF</div><div class="wcag">WCAG: AAA / 21:1</div></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-block" style="background:#F8F8F8; border-bottom: 1px solid #e0e0e0;"><span class="hex-overlay on-light">F8F8F8</span></div>
+          <div class="swatch-info"><div class="name">Light Gray</div><div class="hex">Hex: #F8F8F8</div><div class="wcag">WCAG: AAA / 19.77:1</div></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-block" style="background:#818385;"><span class="hex-overlay on-dark">818385</span></div>
+          <div class="swatch-info"><div class="name">Medium Gray</div><div class="hex">Hex: #818385</div><div class="wcag">WCAG: AA / 5.51:1</div></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-block" style="background:#262626;"><span class="hex-overlay on-dark">262626</span></div>
+          <div class="swatch-info"><div class="name">Black</div><div class="hex">Hex: #262626</div><div class="wcag">WCAG: AAA / 15.13:1</div></div>
         </div>
       </div>
     </div>
 
-    <!-- Colors -->
-    <div class="brand-section">
-      <h3>Color Palette</h3>
-      <div class="color-groups">
-        <div>
-          <div class="color-group-label">Primary</div>
-          <div class="color-row">
-            <div class="swatch"><div class="swatch-block" style="background:#296A3C;"></div><div class="swatch-info"><div class="name">McGill Green</div><div class="hex">#296A3C</div></div></div>
-            <div class="swatch"><div class="swatch-block" style="background:#F1F2EA;"></div><div class="swatch-info"><div class="name">Light Tan</div><div class="hex">#F1F2EA</div></div></div>
-            <div class="swatch"><div class="swatch-block" style="background:#10312B;"></div><div class="swatch-info"><div class="name">Dark Green</div><div class="hex">#10312B</div></div></div>
-          </div>
-        </div>
-        <div>
-          <div class="color-group-label">Secondary</div>
-          <div class="color-row">
-            <div class="swatch"><div class="swatch-block" style="background:#094A27;"></div><div class="swatch-info"><div class="name">Deep Green</div><div class="hex">#094A27</div></div></div>
-            <div class="swatch"><div class="swatch-block" style="background:#80693C;"></div><div class="swatch-info"><div class="name">Warm Brown</div><div class="hex">#80693C</div></div></div>
-            <div class="swatch"><div class="swatch-block" style="background:#C5A84E;"></div><div class="swatch-info"><div class="name">McGill Gold</div><div class="hex">#C5A84E</div></div></div>
-          </div>
-        </div>
-        <div>
-          <div class="color-group-label">Neutrals</div>
-          <div class="color-row">
-            <div class="swatch"><div class="swatch-block" style="background:#F8F8F8; border-bottom:1px solid #e0e0e0;"></div><div class="swatch-info"><div class="name">Off White</div><div class="hex">#F8F8F8</div></div></div>
-            <div class="swatch"><div class="swatch-block" style="background:#818385;"></div><div class="swatch-info"><div class="name">Mid Gray</div><div class="hex">#818385</div></div></div>
-            <div class="swatch"><div class="swatch-block" style="background:#262626;"></div><div class="swatch-info"><div class="name">Near Black</div><div class="hex">#262626</div></div></div>
-          </div>
-        </div>
-      </div>
+    <!-- ═══════════════════════════════════════════════
+         03 / LOGO USAGE
+         Source: McGill_Brand_Guide_v3.8.pdf, Page 4
+         ═══════════════════════════════════════════════ -->
+    <div class="section-header">
+      <h2>03 / Logo Usage</h2>
+      <p>The McGill Hose &amp; Coupling logo features a spiral hose coil icon alongside the "McGill HOSE &amp; COUPLING" wordmark. Four approved versions below.</p>
     </div>
 
-    <!-- Logo Usage -->
     <div class="brand-section">
-      <h3>Logo Variants</h3>
-      <p style="font-size:13px; color: var(--text); margin-bottom: 16px;">Three approved variants. Choose based on the background context.</p>
       <div class="logo-grid">
         <div class="logo-card">
-          <div class="logo-preview on-light"><img src="../assets/McGill-Hose-Logo---2026.png" alt="Primary"></div>
-          <div class="logo-info"><h4>Primary — Full Color</h4><p>White or light backgrounds</p></div>
+          <div class="logo-preview" style="background: var(--tan);">
+            <img src="../assets/McGill-Hose-Logo---2026.png" alt="Primary Logo">
+          </div>
+          <div class="logo-info">
+            <h4>Primary Logo</h4>
+            <p>Light backgrounds (#F1F2EA, #FFFFFF)</p>
+          </div>
         </div>
         <div class="logo-card">
-          <div class="logo-preview on-dark"><img src="../assets/McGill-Hose-Logo-white-vector.png" alt="White"></div>
-          <div class="logo-info"><h4>Reversed — White</h4><p>Dark green or dark backgrounds</p></div>
+          <div class="logo-preview" style="background: var(--dark-green);">
+            <img src="../assets/McGill-Hose-Logo-white-vector.png" alt="Reversed White on Dark">
+          </div>
+          <div class="logo-info">
+            <h4>Reversed White | Dark Background</h4>
+            <p>Dark backgrounds (#10312B, #094A27)</p>
+          </div>
         </div>
         <div class="logo-card">
-          <div class="logo-preview" style="background: var(--gray);"><img src="../assets/McGill-Hose-Logo-white-vector.png" alt="Single Color"></div>
-          <div class="logo-info"><h4>Single Color</h4><p>When color printing unavailable</p></div>
+          <div class="logo-preview" style="background: var(--green);">
+            <img src="../assets/McGill-Hose-Logo-white-vector.png" alt="Reversed White on Brand Green">
+          </div>
+          <div class="logo-info">
+            <h4>Reversed White | Brand Green</h4>
+            <p>Green backgrounds (#296A3C)</p>
+          </div>
+        </div>
+        <div class="logo-card">
+          <div class="logo-preview" style="background: var(--dark-green);">
+            <img src="../assets/McGill-Hose-Logo-white-vector.png" alt="Single Color Dark Green" style="opacity: .7;">
+          </div>
+          <div class="logo-info">
+            <h4>Single Color | Dark Green</h4>
+            <p>Single-ink printing, fax, embossing (#10312B)</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>Logo Guidelines</h3>
+      <table class="guidelines-table">
+        <tr><td>Clear Space</td><td>Minimum clear space equal to the height of the 'M' in McGill on all sides.</td></tr>
+        <tr><td>Minimum Size</td><td>Never smaller than 1 inch (print) or 120px wide (digital).</td></tr>
+        <tr><td>Color Usage</td><td>Only use the four approved versions. Never alter logo colors.</td></tr>
+        <tr><td>Backgrounds</td><td>Primary on light. Reversed/white on dark or green backgrounds.</td></tr>
+        <tr><td>Don'ts</td><td>Never stretch, rotate, add effects, or place on busy backgrounds.</td></tr>
+      </table>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         04 / CERTIFICATIONS & TRUST SIGNALS
+         Source: McGill_Brand_Guide_v3.8.pdf, Page 5
+         ═══════════════════════════════════════════════ -->
+    <div class="section-header">
+      <h2>04 / Certifications &amp; Trust Signals</h2>
+      <p>McGill's certifications, memberships, and partnerships are key trust signals. Present them consistently across all touchpoints, digital and print.</p>
+    </div>
+
+    <div class="brand-section" style="padding: 0; overflow: hidden;">
+      <!-- Tier 1 -->
+      <div class="tier-header">Tier 1 | Certifications</div>
+      <div class="cert-card">
+        <div class="cert-badge"><img src="../assets/McGill-Hose-Logo-white-vector-square.png" alt="ISO" style="filter: none; max-height: 40px;"></div>
+        <div>
+          <h4>ISO 9001:2015 / AS9100D</h4>
+          <p>Certified by TUV SUD America. International standards for quality management and aerospace supply chain. Demonstrates process control, continuous improvement, and product safety.</p>
+        </div>
+      </div>
+
+      <!-- Tier 2 -->
+      <div class="tier-header">Tier 2 | Memberships &amp; Associations</div>
+      <div class="cert-card">
+        <div class="cert-badge" style="font-size: 28px; font-weight: 900; color: var(--dark-green);">NAHAD</div>
+        <div>
+          <h4>NAHAD <span>- Founding Member</span></h4>
+          <p>Association for Hose &amp; Accessories Distribution. McGill is a founding member, underscoring decades of industry leadership.</p>
+        </div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-badge" style="font-size: 11px; font-weight: 700; color: var(--dark-green); text-align: center; line-height: 1.2;">NAHAD<br>HSI<br>Designated</div>
+        <div>
+          <h4>Hose Safety Institute <span>- Designated</span></h4>
+          <p>Dedicated to hose assembly safety standards and best practices. Signals commitment to safe fluid handling.</p>
+        </div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-badge" style="font-size: 20px; font-weight: 800; color: #0066a4;">IDCO</div>
+        <div>
+          <h4>Industrial Distributor Co-op <span>- Member</span></h4>
+          <p>Industrial distribution industry association, connecting McGill to broader supply chain networks.</p>
+        </div>
+      </div>
+
+      <!-- Tier 3 -->
+      <div class="tier-header">Tier 3 | Authorized Partnerships</div>
+      <div class="cert-card">
+        <div class="cert-badge" style="font-size: 11px; font-weight: 700; color: var(--gold); text-align: center;">Danfoss<br>Platinum<br>Partner</div>
+        <div>
+          <h4>Danfoss Platinum Partner</h4>
+          <p>Authorized distributor for Aeroquip hydraulic hose, fittings, and adapters.</p>
+        </div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-badge" style="font-size: 11px; font-weight: 700; color: var(--gold); text-align: center;">Continental<br>Star</div>
+        <div>
+          <h4>Continental <span>- Star Distributor</span></h4>
+          <p>Industrial Hose Star Distributor. Recognized for safety, training, reliability, and assembly excellence.</p>
+        </div>
+      </div>
+      <div class="cert-card" style="border-radius: 0 0 12px 12px;">
+        <div class="cert-badge" style="font-size: 10px; font-weight: 700; color: var(--dark-green); text-align: center;">Aeroquip<br>Hose Center</div>
+        <div>
+          <h4>Danfoss Aeroquip <span>- Hose Center</span></h4>
+          <p>Authorized Aeroquip Hose Center for hydraulic hose assemblies. Featured in hydraulic product sections and retail store locations.</p>
         </div>
       </div>
     </div>
 
-    <!-- Certifications -->
+    <!-- ═══════════════════════════════════════════════
+         05 / TRUST SIGNAL PLACEMENT
+         Source: McGill_Brand_Guide_v3.8.pdf, Page 6
+         ═══════════════════════════════════════════════ -->
+    <div class="section-header">
+      <h2>05 / Trust Signal Placement</h2>
+      <p>Strategic placement of trust signals on the ecommerce site to build customer confidence at key decision points in the buying journey.</p>
+    </div>
+
     <div class="brand-section">
-      <h3>Certification Tiers</h3>
-      <div class="cert-list">
-        <div class="cert-row">
-          <div class="cert-tier">1</div>
-          <div><h4>Always Visible</h4><p>ISO 9100 and NAHAD HSI — website footer, email footers, all primary materials</p></div>
+      <div class="usage-notes" style="margin-top: 0; margin-bottom: 20px;">
+        <h4>Visual Hierarchy</h4>
+        <p>Tier 1 (ISO, AS9100D) = largest, most prominent. Tier 2 (NAHAD, HSI) = standard. Tier 3 (Partner logos) = supporting. Never mix tiers at the same visual weight.</p>
+      </div>
+
+      <div class="placement-grid">
+        <div class="placement-row">
+          <h4>Homepage <span>Hero / Above the Fold</span></h4>
+          <p>ISO 9001 + AS9100D badges in a trust bar below the hero. The #1 trust signal for industrial buyers. Include NAHAD founding member badge in the same row.</p>
+          <span class="impact high">Impact: High — First impression, sets credibility immediately</span>
         </div>
-        <div class="cert-row">
-          <div class="cert-tier">2</div>
-          <div><h4>Featured Partners</h4><p>Danfoss Premium Partner, Aeroquip Hose Center, Continental Star — home page and product pages</p></div>
+        <div class="placement-row">
+          <h4>Product Detail Pages <span>Below Product Specs</span></h4>
+          <p>Show relevant certifications per product category. Aerospace products feature AS9100D prominently. Sanitary/PTFE products highlight FDA/3A compliance.</p>
+          <span class="impact critical">Impact: Critical — This is where purchase decisions happen</span>
         </div>
-        <div class="cert-row">
-          <div class="cert-tier">3</div>
-          <div><h4>Contextual</h4><p>NAHAD membership, IDCO — about/partnership pages and trade show materials</p></div>
+        <div class="placement-row">
+          <h4>Category Pages <span>Sidebar or Sub-header</span></h4>
+          <p>Partner badges (Aeroquip Platinum, Continental) near the top of category pages for those product lines. Reinforces authorized distributor status.</p>
+          <span class="impact medium">Impact: Medium — Validates product authenticity</span>
         </div>
+        <div class="placement-row">
+          <h4>Footer (Global) <span>Trust Bar</span></h4>
+          <p>All Tier 1 and Tier 2 badges in a clean horizontal row. Persistent across every page.</p>
+          <span class="impact baseline">Impact: Baseline — Constant reassurance</span>
+        </div>
+        <div class="placement-row">
+          <h4>About / Company <span>Dedicated Section</span></h4>
+          <p>Full presentation with descriptions, cert numbers, and download links for cert documents. The deep-dive for procurement teams.</p>
+          <span class="impact high">Impact: High — Procurement teams check here</span>
+        </div>
+        <div class="placement-row">
+          <h4>Cart / Checkout <span>Reassurance Strip</span></h4>
+          <p>Small trust badges (ISO + AS9100D) near the CTA button. Reduces friction at the final decision point.</p>
+          <span class="impact critical">Impact: Critical — Reduces cart abandonment</span>
+        </div>
+      </div>
+
+      <h3 style="margin-top: 24px;">Footer Badge Strip | Single-Color Variants</h3>
+      <p style="font-size: 13px; color: var(--text); margin-bottom: 12px;">Monochrome badges in #10312B (Dark Green) for footer trust bars, invoices, and low-color contexts.</p>
+      <div class="footer-badges">
+        <div class="fb-item"><div style="font-size: 14px; font-weight: 800; color: rgba(255,255,255,.8);">ISO/AS9100</div><div class="fb-label">ISO / AS9100</div></div>
+        <div class="fb-item"><div style="font-size: 16px; font-weight: 900; color: rgba(255,255,255,.8);">NAHAD</div><div class="fb-label">NAHAD</div></div>
+        <div class="fb-item"><div style="font-size: 11px; font-weight: 700; color: rgba(255,255,255,.8);">HSI Designated</div><div class="fb-label">HSI Designated</div></div>
+        <div class="fb-item"><div style="font-size: 16px; font-weight: 800; color: rgba(255,255,255,.8);">IDCO</div><div class="fb-label">IDCO</div></div>
+        <div class="fb-item"><div style="font-size: 11px; font-weight: 700; color: rgba(255,255,255,.8);">Danfoss</div><div class="fb-label">Danfoss</div></div>
       </div>
     </div>
 
-    <!-- Email Templates -->
-    <div id="assets" class="section-header">
+    <!-- ═══════════════════════════════════════════════
+         EMAIL TEMPLATES
+         ═══════════════════════════════════════════════ -->
+    <div id="email-templates" class="section-header">
       <h2>Email Templates</h2>
       <p>Oro Commerce transactional email templates — all 7 templates with preview versions.</p>
     </div>
@@ -301,7 +575,7 @@
   </div>
 
   <footer>
-    <p>&copy; 2026 McGill Hose &amp; Coupling, Inc. &middot; Internal Use Only</p>
+    <p>&copy; 2026 McGill Hose &amp; Coupling, Inc. &middot; Internal Use Only &middot; Brand Guide v3.8</p>
   </footer>
 
 </body>
