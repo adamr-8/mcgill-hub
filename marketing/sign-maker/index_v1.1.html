@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>McGill Hub — Retail Sign Maker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="icon" href="../../assets/McGill-Hose-Logo-white-vector-square.png">
+  <style>
+    /* ──────────────────────────────────────────────
+       Tokens — aligned with mcgill-hub conventions
+       ────────────────────────────────────────────── */
+    :root {
+      --green: #296A3C;
+      --deep-green: #094A27;
+      --dark-green: #10312B;
+      --tan: #F1F2EA;
+      --gold: #C5A84E;
+      --brown: #80693C;
+      --white: #FFFFFF;
+      --light: #F8F8F8;
+      --gray: #818385;
+      --dark: #262626;
+      --text: #3C3F44;
+      --border: #E8E8E4;
+      --radius: 16px;
+      --shadow: 0 16px 48px rgba(16, 49, 43, .14);
+
+      /* Print dimensions (overridden per size) */
+      --print-w: 8.5in;
+      --print-h: 11in;
+      --preview-scale: .62;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--light);
+      color: var(--text);
+    }
+
+    /* ── Hub Nav (matches mcgill-hub pattern) ── */
+    nav {
+      background: var(--dark-green);
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      border-bottom: 3px solid var(--gold);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    nav .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    nav .logo img { height: 32px; }
+    nav .logo span { color: var(--tan); font-size: 16px; font-weight: 700; }
+    nav .links { display: flex; gap: 4px; margin-left: auto; }
+    nav .links a {
+      color: rgba(241,242,234,.7);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 6px;
+      transition: all .15s;
+    }
+    nav .links a:hover { color: var(--tan); background: rgba(255,255,255,.08); }
+    nav .links a.active { color: var(--gold); background: rgba(197,168,78,.12); }
+
+    /* ── Page Header ── */
+    .page-header {
+      background: linear-gradient(135deg, var(--green), var(--deep-green));
+      padding: 40px 24px;
+      position: relative;
+    }
+    .page-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--gold);
+    }
+    .page-header .inner { max-width: 1400px; margin: 0 auto; }
+    .page-header h1 {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -.03em;
+    }
+    .page-header p {
+      font-size: 14px;
+      color: rgba(255,255,255,.65);
+      margin-top: 6px;
+    }
+
+    /* ── Workspace Layout ── */
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(320px, 420px) minmax(480px, 1fr);
+      gap: 24px;
+      align-items: start;
+      padding: 24px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* ── Panels ── */
+    .panel {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .panel-header {
+      padding: 18px 20px;
+      background: var(--tan);
+      border-bottom: 1px solid var(--border);
+    }
+    .panel-header h2 {
+      margin: 0;
+      color: var(--deep-green);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+    }
+    .panel-header p {
+      margin: 4px 0 0;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    /* ── Form Controls ── */
+    .controls {
+      display: grid;
+      gap: 18px;
+      padding: 18px 20px 22px;
+    }
+    fieldset {
+      margin: 0; padding: 0; border: 0;
+      display: grid;
+      gap: 10px;
+    }
+    legend {
+      display: block;
+      width: 100%;
+      margin: 0 0 2px;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .field { display: grid; gap: 4px; }
+    label {
+      color: var(--deep-green);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+    }
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--white);
+      color: var(--dark);
+      padding: 9px 11px;
+      font: inherit;
+      font-size: 14px;
+      outline: none;
+      transition: border .15s, box-shadow .15s;
+    }
+    textarea { resize: vertical; min-height: 68px; }
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(41,106,60,.1);
+    }
+    .checkrow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 32px;
+      color: var(--text);
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .checkrow input { width: auto; accent-color: var(--green); }
+
+    /* ── Buttons ── */
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 2px;
+    }
+    .button {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 14px;
+      color: var(--white);
+      background: var(--green);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .01em;
+      cursor: pointer;
+      transition: transform .12s, filter .12s;
+    }
+    .button:hover { transform: translateY(-1px); filter: brightness(1.05); }
+    .button.secondary { background: var(--dark-green); }
+    .button.ghost {
+      color: var(--deep-green);
+      background: var(--tan);
+      border: 1px solid rgba(41,106,60,.2);
+    }
+
+    /* ── Notice ── */
+    .notice {
+      display: none;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: rgba(197,168,78,.15);
+      color: var(--dark-green);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .notice.is-visible { display: block; }
+
+    /* ── Preview Panel ── */
+    .preview-panel {
+      min-height: 780px;
+      padding: 20px;
+      position: sticky;
+      top: 80px;
+      overflow: auto;
+    }
+    .preview-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .preview-toolbar h2 {
+      margin: 0;
+      color: var(--deep-green);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+    }
+    .hint {
+      color: var(--gray);
+      font-size: 12px;
+      line-height: 1.3;
+    }
+
+    /* ════════════════════════════════════════════════
+       SIGN PREVIEW — the actual printed sign
+       ════════════════════════════════════════════════ */
+    #printArea {
+      display: flex;
+      justify-content: center;
+      min-height: calc(var(--print-h) * var(--preview-scale));
+    }
+    .sign-scale {
+      width: calc(var(--print-w) * var(--preview-scale));
+      height: calc(var(--print-h) * var(--preview-scale));
+      position: relative;
+    }
+    .sign {
+      width: var(--print-w);
+      height: var(--print-h);
+      transform: scale(var(--preview-scale));
+      transform-origin: top left;
+      background: var(--tan);
+      color: var(--dark);
+      box-shadow: 0 16px 52px rgba(16,49,43,.22);
+      overflow: hidden;
+      position: absolute;
+      inset: 0 auto auto 0;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      border: 0;
+    }
+
+    /* Theme accents */
+    .sign.theme-sale      { --accent: var(--gold); --headline-bg: var(--dark-green); }
+    .sign.theme-standard  { --accent: var(--green); --headline-bg: var(--deep-green); }
+    .sign.theme-clearance { --accent: var(--gold); --headline-bg: var(--dark-green); }
+
+    /* ── Sign Header ── */
+    .sign-top {
+      background: var(--headline-bg, var(--dark-green));
+      color: var(--white);
+      padding: .5in .6in .48in;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: .35in;
+      align-items: center;
+    }
+    .sign-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: max-content;
+      max-width: 100%;
+      padding: .1in .22in .09in;
+      border: 2px solid rgba(255,255,255,.35);
+      border-radius: 999px;
+      color: var(--gold);
+      font-weight: 900;
+      font-size: 14pt;
+      line-height: 1;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      margin-bottom: .15in;
+    }
+    .sign-category {
+      color: var(--white);
+      font-size: 26pt;
+      line-height: 1.05;
+      font-weight: 900;
+      letter-spacing: -.02em;
+      text-transform: uppercase;
+    }
+    .sign-sku-top {
+      justify-self: end;
+      min-width: 1.6in;
+      color: rgba(255,255,255,.8);
+      text-align: right;
+      font-size: 9.5pt;
+      font-weight: 800;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      line-height: 1.3;
+    }
+
+    /* ── Sign Body ── */
+    .sign-body {
+      padding: .5in .6in .4in;
+      display: grid;
+      grid-template-rows: auto auto auto 1fr auto;
+      gap: .22in;
+    }
+
+    /* Price row */
+    .price-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: .2in;
+      align-items: start;
+    }
+    .price-block {
+      color: var(--deep-green);
+      line-height: .88;
+      letter-spacing: -.05em;
+      font-weight: 900;
+      font-size: 108pt;
+      white-space: nowrap;
+    }
+    .price-currency {
+      display: inline-block;
+      margin-right: .02em;
+      font-size: .5em;
+      line-height: 1;
+      vertical-align: .55em;
+      letter-spacing: -.03em;
+    }
+    .price-cents {
+      display: inline-block;
+      margin-left: .02em;
+      font-size: .36em;
+      line-height: 1;
+      vertical-align: .78em;
+      letter-spacing: -.02em;
+    }
+    .unit {
+      color: var(--green);
+      font-size: 18pt;
+      font-weight: 900;
+      letter-spacing: -.01em;
+      text-align: right;
+      padding-top: .16in;
+      white-space: nowrap;
+    }
+    .compare {
+      margin-top: .04in;
+      color: var(--gray);
+      font-size: 15pt;
+      font-weight: 700;
+      letter-spacing: -.01em;
+    }
+    .compare span { text-decoration: line-through; }
+
+    /* Product info */
+    .product-name {
+      color: var(--deep-green);
+      font-size: 40pt;
+      line-height: 1.05;
+      letter-spacing: -.035em;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+    .product-description {
+      color: var(--text);
+      font-size: 22pt;
+      line-height: 1.2;
+      letter-spacing: -.01em;
+      font-weight: 500;
+      max-width: 7in;
+      white-space: pre-wrap;
+    }
+
+    /* Spec card */
+    .spec-card {
+      margin-top: .06in;
+      border-top: 3px solid var(--accent, var(--green));
+      border-bottom: 1px solid rgba(16,49,43,.14);
+      background: rgba(255,255,255,.5);
+      border-radius: 14px;
+      padding: .2in .22in;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: .16in .2in;
+      align-self: start;
+    }
+    .spec-item { min-width: 0; }
+    .spec-label {
+      color: var(--green);
+      font-size: 9.5pt;
+      font-weight: 900;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      margin-bottom: .05in;
+    }
+    .spec-value {
+      color: var(--dark);
+      font-size: 17pt;
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -.01em;
+      overflow-wrap: anywhere;
+    }
+
+    /* Message strip */
+    .message-strip {
+      align-self: end;
+      border-radius: 12px;
+      background: var(--dark-green);
+      color: var(--white);
+      padding: .18in .24in;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      font-size: 20pt;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+    }
+
+    /* ── Sign Footer ── */
+    .sign-footer {
+      padding: .3in .6in .34in;
+      display: grid;
+      grid-template-columns: minmax(2.6in, 1fr) auto;
+      gap: .3in;
+      align-items: end;
+      border-top: 1px solid rgba(16,49,43,.12);
+      background: rgba(255,255,255,.48);
+    }
+    .sign-logo {
+      width: 2.6in;
+      display: block;
+    }
+    .footer-note {
+      color: var(--text);
+      font-size: 11.5pt;
+      line-height: 1.3;
+      font-weight: 600;
+      margin-top: .1in;
+    }
+
+    /* Trust pills */
+    .trust-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .08in;
+      justify-content: flex-end;
+      max-width: 3.6in;
+      align-self: end;
+    }
+    .trust-pill {
+      border: 1px solid rgba(16,49,43,.2);
+      border-radius: 999px;
+      color: var(--dark-green);
+      background: var(--tan);
+      padding: .055in .12in .05in;
+      font-size: 8pt;
+      font-weight: 900;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* QR placeholder */
+    .qr-box {
+      width: .82in;
+      height: .82in;
+      border: 2px solid var(--dark-green);
+      display: grid;
+      place-items: center;
+      color: var(--dark-green);
+      font-size: 7pt;
+      font-weight: 900;
+      text-align: center;
+      text-transform: uppercase;
+      line-height: 1.1;
+      background:
+        linear-gradient(90deg, var(--dark-green) 10px, transparent 10px) 7px 7px / 22px 22px no-repeat,
+        linear-gradient(0deg, var(--dark-green) 10px, transparent 10px) 7px 7px / 22px 22px no-repeat,
+        linear-gradient(90deg, var(--dark-green) 7px, transparent 7px) 48px 10px / 18px 18px no-repeat,
+        linear-gradient(0deg, var(--dark-green) 7px, transparent 7px) 48px 10px / 18px 18px no-repeat,
+        var(--white);
+    }
+
+    /* ════════════════════════════════════════════════
+       SIZE VARIANTS
+       ════════════════════════════════════════════════ */
+
+    /* Half letter — 5.5 × 8.5 */
+    .size-half { --print-w: 5.5in; --print-h: 8.5in; --preview-scale: .72; }
+    .size-half .sign-top { padding: .38in .44in .34in; }
+    .size-half .sign-badge { font-size: 11pt; margin-bottom: .1in; }
+    .size-half .sign-category { font-size: 19pt; }
+    .size-half .sign-body { padding: .36in .44in .3in; gap: .16in; }
+    .size-half .price-block { font-size: 74pt; }
+    .size-half .unit { font-size: 14pt; }
+    .size-half .product-name { font-size: 28pt; }
+    .size-half .product-description { font-size: 15pt; }
+    .size-half .spec-card { grid-template-columns: 1fr; gap: .1in; padding: .16in; }
+    .size-half .spec-label { font-size: 8pt; }
+    .size-half .spec-value { font-size: 14pt; }
+    .size-half .message-strip { font-size: 14pt; padding: .14in .2in; }
+    .size-half .sign-footer { padding: .24in .44in .26in; grid-template-columns: 1fr; gap: .16in; }
+    .size-half .sign-logo { width: 2in; }
+    .size-half .trust-strip { justify-content: flex-start; }
+    .size-half .footer-note { font-size: 10pt; }
+
+    /*
+     * Shelf tag — 7 × 1.3125 in (1 5/16")
+     * Sized to fit standard retail gondola shelf-strip channels.
+     * Print on cardstock, trim with paper cutter, slide into channel.
+     */
+    .size-shelf {
+      --print-w: 7in;
+      --print-h: 1.3125in;
+      --preview-scale: 1;
+    }
+    .size-shelf .sign {
+      grid-template-rows: 1fr;
+      grid-template-columns: 1fr;
+    }
+    .size-shelf .sign-top { display: none; }
+    .size-shelf .sign-body {
+      padding: .08in .16in;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      grid-template-rows: auto auto;
+      gap: .015in .12in;
+      align-items: center;
+      align-content: center;
+      background: var(--tan);
+    }
+
+    /* Logo — left column */
+    .size-shelf .sign-footer { display: contents; }
+    .size-shelf .footer-left {
+      grid-column: 1;
+      grid-row: 1 / 3;
+      align-self: center;
+      display: flex;
+      align-items: center;
+    }
+    .size-shelf .sign-logo {
+      width: .68in;
+      display: block;
+    }
+    .size-shelf .footer-note,
+    .size-shelf .trust-strip { display: none; }
+
+    /* Product name — top row center */
+    .size-shelf .product-name {
+      grid-column: 2;
+      grid-row: 1;
+      font-size: 11pt;
+      line-height: 1.05;
+    }
+
+    /* Description — bottom row center */
+    .size-shelf .product-description {
+      grid-column: 2;
+      grid-row: 2;
+      font-size: 7pt;
+      line-height: 1.15;
+      max-height: .35in;
+      overflow: hidden;
+    }
+
+    /* Price — right column, spans rows */
+    .size-shelf .price-row {
+      grid-column: 3;
+      grid-row: 1 / 3;
+      display: block;
+      text-align: right;
+    }
+    .size-shelf .price-block {
+      font-size: 30pt;
+      line-height: .9;
+    }
+    .size-shelf .price-currency { font-size: .46em; vertical-align: .48em; }
+    .size-shelf .price-cents { font-size: .32em; vertical-align: .7em; }
+    .size-shelf .unit {
+      text-align: right;
+      font-size: 7pt;
+      padding-top: .01in;
+    }
+
+    /* Hide elements that don't fit shelf tags */
+    .size-shelf .compare { display: none; }
+    .size-shelf .spec-card { display: none; }
+    .size-shelf .message-strip { display: none; }
+
+    /* ════════════════════════════════════════════════
+       RESPONSIVE
+       ════════════════════════════════════════════════ */
+    @media (max-width: 1080px) {
+      .workspace { grid-template-columns: 1fr; }
+      .preview-panel { position: static; }
+    }
+    @media (max-width: 640px) {
+      .workspace { padding: 16px; }
+      .grid-2, .actions { grid-template-columns: 1fr; }
+      .preview-panel { padding: 14px 8px; }
+      :root { --preview-scale: .42; }
+    }
+
+    /* ════════════════════════════════════════════════
+       PRINT
+       ════════════════════════════════════════════════ */
+    @page { size: letter portrait; margin: 0; }
+
+    @media print {
+      :root { --preview-scale: 1 !important; }
+      html, body {
+        width: 100%; height: 100%;
+        margin: 0 !important; padding: 0 !important;
+        background: white !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      nav, .page-header, .controls-panel, .preview-toolbar { display: none !important; }
+      .workspace {
+        display: block;
+        padding: 0; margin: 0; max-width: none;
+      }
+      .preview-panel {
+        min-height: 0; padding: 0; margin: 0;
+        border: 0; box-shadow: none;
+        background: white; overflow: visible;
+      }
+      #printArea, .sign-scale {
+        display: block;
+        width: var(--print-w) !important;
+        height: var(--print-h) !important;
+      }
+      .sign-scale { position: static; }
+      .sign {
+        position: static;
+        transform: none !important;
+        box-shadow: none;
+      }
+    }
+
+    /* Footer */
+    footer {
+      background: var(--dark-green);
+      margin-top: 48px;
+      padding: 24px;
+      text-align: center;
+      border-top: 3px solid var(--gold);
+    }
+    footer p { font-size: 12px; color: rgba(255,255,255,.4); }
+  </style>
+</head>
+<body>
+
+  <!-- Hub Nav -->
+  <nav>
+    <a href="../../index.html" class="logo">
+      <img src="../../assets/McGill-Hose-Logo-white-vector.png" alt="McGill">
+      <span>McGill Hub</span>
+    </a>
+    <div class="links">
+      <a href="../../index.html">Home</a>
+      <a href="../index.html">Marketing</a>
+      <a href="../../sales/index.html">Sales &amp; Strategy</a>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <section class="page-header">
+    <div class="inner">
+      <h1>Retail Sign Maker</h1>
+      <p>Create brand-consistent retail pricing signs. Enter product details, preview live, and print.</p>
+    </div>
+  </section>
+
+  <!-- Workspace -->
+  <main class="workspace">
+
+    <!-- ── Controls Panel ── -->
+    <section class="panel controls-panel">
+      <div class="panel-header">
+        <h2>Create a sign</h2>
+        <p>Enter product details below. The sign updates as you type.</p>
+      </div>
+
+      <form class="controls" id="signForm" autocomplete="off">
+
+        <!-- Template -->
+        <fieldset>
+          <legend>Template</legend>
+          <div class="grid-2">
+            <div class="field">
+              <label for="size">Sign size</label>
+              <select id="size" name="size">
+                <option value="letter" selected>Letter — 8.5 × 11</option>
+                <option value="half">Half letter — 5.5 × 8.5</option>
+                <option value="shelf">Shelf tag — 7 × 1 5/16</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="theme">Style</label>
+              <select id="theme" name="theme">
+                <option value="standard">Standard</option>
+                <option value="sale" selected>Retail special</option>
+                <option value="clearance">Clearance</option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Product Lookup -->
+        <fieldset>
+          <legend>Product lookup</legend>
+          <div class="grid-2">
+            <div class="field">
+              <label for="sku">SKU</label>
+              <input id="sku" name="sku" value="ASY-3/8x100-PW4000BL-MXMSWIV" placeholder="SKU or item number">
+            </div>
+            <div class="field">
+              <label for="price">Price</label>
+              <input id="price" name="price" type="number" min="0" step="0.01" value="140.00" placeholder="140.00">
+            </div>
+          </div>
+          <div class="actions">
+            <button type="button" class="button ghost" id="lookupBtn">Lookup sample SKU</button>
+            <button type="button" class="button ghost" id="clearBtn">Clear fields</button>
+          </div>
+          <div class="notice" id="lookupNotice"></div>
+        </fieldset>
+
+        <!-- Product Copy -->
+        <fieldset>
+          <legend>Product copy</legend>
+          <div class="field">
+            <label for="category">Category / headline</label>
+            <input id="category" name="category" value="Pressure Washer Hose" placeholder="Pressure Washer Hose">
+          </div>
+          <div class="field">
+            <label for="name">Product name</label>
+            <input id="name" name="name" value="3/8 x 100 ft - 4000 PSI" placeholder="3/8 x 100 ft - 4000 PSI">
+          </div>
+          <div class="field">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" placeholder="MXM Swivel, blue cover, pressure washer ready">MXM Swivel</textarea>
+          </div>
+        </fieldset>
+
+        <!-- Specifications -->
+        <fieldset>
+          <legend>Specifications</legend>
+          <div class="grid-2">
+            <div class="field">
+              <label for="spec1Label">Spec 1 label</label>
+              <input id="spec1Label" value="Size">
+            </div>
+            <div class="field">
+              <label for="spec1Value">Spec 1 value</label>
+              <input id="spec1Value" value="3/8 x 100 ft">
+            </div>
+            <div class="field">
+              <label for="spec2Label">Spec 2 label</label>
+              <input id="spec2Label" value="Pressure">
+            </div>
+            <div class="field">
+              <label for="spec2Value">Spec 2 value</label>
+              <input id="spec2Value" value="4000 PSI">
+            </div>
+            <div class="field">
+              <label for="spec3Label">Spec 3 label</label>
+              <input id="spec3Label" value="Ends">
+            </div>
+            <div class="field">
+              <label for="spec3Value">Spec 3 value</label>
+              <input id="spec3Value" value="MXM Swivel">
+            </div>
+            <div class="field">
+              <label for="spec4Label">Spec 4 label</label>
+              <input id="spec4Label" value="Availability">
+            </div>
+            <div class="field">
+              <label for="spec4Value">Spec 4 value</label>
+              <input id="spec4Value" value="While supplies last">
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Retail Messaging -->
+        <fieldset>
+          <legend>Retail messaging</legend>
+          <div class="grid-2">
+            <div class="field">
+              <label for="badge">Top badge</label>
+              <input id="badge" name="badge" value="In-Store Special" placeholder="In-Store Special">
+            </div>
+            <div class="field">
+              <label for="unit">Unit</label>
+              <input id="unit" name="unit" value="/EA" placeholder="/EA">
+            </div>
+            <div class="field">
+              <label for="compareAt">Compare at</label>
+              <input id="compareAt" name="compareAt" type="number" min="0" step="0.01" placeholder="Optional">
+            </div>
+            <div class="field">
+              <label for="message">Bottom message</label>
+              <input id="message" name="message" value="While They Last" placeholder="While They Last">
+            </div>
+          </div>
+          <div class="field">
+            <label for="footerNote">Footer note</label>
+            <input id="footerNote" name="footerNote" value="Need a custom hose assembly? Ask our counter team." placeholder="Optional footer note">
+          </div>
+        </fieldset>
+
+        <!-- Options -->
+        <fieldset>
+          <legend>Options</legend>
+          <label class="checkrow"><input type="checkbox" id="showSku" checked> Show SKU on sign</label>
+          <label class="checkrow"><input type="checkbox" id="showTrust" checked> Show trust strip</label>
+          <label class="checkrow"><input type="checkbox" id="showQr"> Show QR placeholder</label>
+        </fieldset>
+
+        <!-- Action Buttons -->
+        <div class="actions">
+          <button type="button" class="button secondary" id="saveBtn">Save preset</button>
+          <button type="button" class="button" id="printBtn">Print sign</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ── Preview Panel ── -->
+    <section class="panel preview-panel">
+      <div class="preview-toolbar">
+        <div>
+          <h2>Live preview</h2>
+          <div class="hint">Print settings: scale 100 %, background graphics on.</div>
+        </div>
+      </div>
+
+      <div id="printArea" class="size-letter">
+        <div class="sign-scale">
+          <article class="sign theme-sale" aria-label="Retail price sign preview">
+
+            <!-- Sign Header -->
+            <header class="sign-top">
+              <div>
+                <div class="sign-badge" data-bind="badge">In-Store Special</div>
+                <div class="sign-category" data-bind="category">Pressure Washer Hose</div>
+              </div>
+              <div class="sign-sku-top" data-block="sku">SKU<br><span data-bind="sku">ASY-3/8x100-PW4000BL-MXMSWIV</span></div>
+            </header>
+
+            <!-- Sign Body -->
+            <section class="sign-body">
+              <div class="price-row">
+                <div>
+                  <div class="price-block" id="priceDisplay"><span class="price-currency">$</span>140<span class="price-cents">00</span></div>
+                  <div class="compare" id="compareDisplay" hidden>Compare at <span>$0.00</span></div>
+                </div>
+                <div class="unit" data-bind="unit">/EA</div>
+              </div>
+              <div class="product-name" data-bind="name">3/8 x 100 ft - 4000 PSI</div>
+              <div class="product-description" data-bind="description">MXM Swivel</div>
+              <div class="spec-card" id="specCard"></div>
+              <div class="message-strip" data-bind="message">While They Last</div>
+            </section>
+
+            <!-- Sign Footer -->
+            <footer class="sign-footer">
+              <div class="footer-left">
+                <img class="sign-logo" src="../../assets/McGill-Hose-Logo-T-2026.png" alt="McGill Hose &amp; Coupling">
+                <div class="footer-note" data-bind="footerNote">Need a custom hose assembly? Ask our counter team.</div>
+              </div>
+              <div class="trust-strip" id="trustStrip" aria-label="Trust signals">
+                <span class="trust-pill">ISO 9001</span>
+                <span class="trust-pill">AS9100D</span>
+                <span class="trust-pill">NAHAD</span>
+                <span class="trust-pill">HSI</span>
+              </div>
+              <div class="qr-box" id="qrBox" hidden>QR<br>Code</div>
+            </footer>
+
+          </article>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>&copy; 2026 McGill Hose &amp; Coupling, Inc. Internal use only.</p>
+  </footer>
+
+  <!-- ════════════════════════════════════════════════
+       Script
+       ════════════════════════════════════════════════ -->
+  <script>
+    /* Sample catalog — replace with API call for production */
+    const sampleCatalog = {
+      "ASY-3/8X100-PW4000BL-MXMSWIV": {
+        sku: "ASY-3/8x100-PW4000BL-MXMSWIV",
+        category: "Pressure Washer Hose",
+        name: "3/8 x 100 ft - 4000 PSI",
+        description: "MXM Swivel",
+        price: "140.00",
+        unit: "/EA",
+        badge: "In-Store Special",
+        message: "While They Last",
+        footerNote: "Need a custom hose assembly? Ask our counter team.",
+        spec1Label: "Size",  spec1Value: "3/8 x 100 ft",
+        spec2Label: "Pressure", spec2Value: "4000 PSI",
+        spec3Label: "Ends", spec3Value: "MXM Swivel",
+        spec4Label: "Availability", spec4Value: "While supplies last"
+      },
+      "ASY-3/8X50-PW4000BL-MXMSWIV": {
+        sku: "ASY-3/8x50-PW4000BL-MXMSWIV",
+        category: "Pressure Washer Hose",
+        name: "3/8 x 50 ft - 4000 PSI",
+        description: "MXM Swivel",
+        price: "75.00",
+        unit: "/EA",
+        badge: "Retail Special",
+        message: "In stock now",
+        footerNote: "Need a custom hose assembly? Ask our counter team.",
+        spec1Label: "Size", spec1Value: "3/8 x 50 ft",
+        spec2Label: "Pressure", spec2Value: "4000 PSI",
+        spec3Label: "Ends", spec3Value: "MXM Swivel",
+        spec4Label: "Cover", spec4Value: "Blue"
+      }
+    };
+
+    /* Field registry */
+    const fields = [
+      "size", "theme", "sku", "category", "name", "description",
+      "price", "unit", "compareAt", "badge", "message", "footerNote",
+      "spec1Label", "spec1Value", "spec2Label", "spec2Value",
+      "spec3Label", "spec3Value", "spec4Label", "spec4Value",
+      "showSku", "showTrust", "showQr"
+    ];
+
+    /* Helpers */
+    const byId = (id) => document.getElementById(id);
+    const sign = document.querySelector(".sign");
+    const printArea = byId("printArea");
+    const notice = byId("lookupNotice");
+
+    function valueOf(id) {
+      const el = byId(id);
+      if (!el) return "";
+      return el.type === "checkbox" ? el.checked : el.value;
+    }
+
+    function setValue(id, value) {
+      const el = byId(id);
+      if (!el) return;
+      if (el.type === "checkbox") el.checked = Boolean(value);
+      else el.value = value ?? "";
+    }
+
+    function escapeHtml(str) {
+      const map = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" };
+      return String(str).replace(/[&<>"']/g, (m) => map[m]);
+    }
+
+    function moneyParts(raw) {
+      const n = Number(raw);
+      if (!Number.isFinite(n)) return { dollars: "0", cents: "00", full: "$0.00" };
+      const fixed = n.toFixed(2);
+      const [dollars, cents] = fixed.split(".");
+      return { dollars, cents, full: `$${dollars}.${cents}` };
+    }
+
+    /* Sync print-area size class */
+    function syncSize(size) {
+      printArea.classList.remove("size-letter", "size-half", "size-shelf");
+      printArea.classList.add("size-" + size);
+    }
+
+    /* Main render loop — called on every input */
+    function render() {
+      syncSize(valueOf("size"));
+
+      /* Theme */
+      sign.classList.remove("theme-standard", "theme-sale", "theme-clearance");
+      sign.classList.add("theme-" + valueOf("theme"));
+
+      /* Text bindings */
+      document.querySelectorAll("[data-bind]").forEach((node) => {
+        node.textContent = valueOf(node.getAttribute("data-bind")) || " ";
+      });
+
+      /* Price */
+      const price = moneyParts(valueOf("price"));
+      byId("priceDisplay").innerHTML =
+        '<span class="price-currency">$</span>' +
+        price.dollars +
+        '<span class="price-cents">' + price.cents + "</span>";
+
+      /* Compare-at */
+      const compareRaw = valueOf("compareAt");
+      const compare = byId("compareDisplay");
+      if (compareRaw && Number(compareRaw) > 0) {
+        compare.hidden = false;
+        compare.querySelector("span").textContent = moneyParts(compareRaw).full;
+      } else {
+        compare.hidden = true;
+      }
+
+      /* Spec card */
+      byId("specCard").innerHTML = [1, 2, 3, 4]
+        .map((i) => {
+          const label = valueOf("spec" + i + "Label").trim();
+          const val = valueOf("spec" + i + "Value").trim();
+          if (!label && !val) return "";
+          return (
+            '<div class="spec-item">' +
+            '<div class="spec-label">' + escapeHtml(label) + "</div>" +
+            '<div class="spec-value">' + escapeHtml(val) + "</div>" +
+            "</div>"
+          );
+        })
+        .join("");
+
+      /* Toggle visibility */
+      document.querySelector("[data-block='sku']").style.display =
+        valueOf("showSku") ? "block" : "none";
+      byId("trustStrip").hidden = !valueOf("showTrust") || valueOf("showQr");
+      byId("qrBox").hidden = !valueOf("showQr");
+    }
+
+    /* State helpers */
+    function collectState() {
+      return Object.fromEntries(fields.map((id) => [id, valueOf(id)]));
+    }
+    function applyState(state) {
+      Object.entries(state || {}).forEach(([id, val]) => setValue(id, val));
+      render();
+    }
+
+    /* SKU lookup */
+    function lookupSampleSku() {
+      const key = valueOf("sku").trim().toUpperCase();
+      const product = sampleCatalog[key];
+      if (!product) {
+        notice.textContent =
+          "No sample match. In a live dashboard this would call your product API.";
+        notice.classList.add("is-visible");
+        return;
+      }
+      applyState({ ...collectState(), ...product });
+      notice.textContent = "Sample SKU loaded.";
+      notice.classList.add("is-visible");
+    }
+
+    /* Preset */
+    function savePreset() {
+      try {
+        localStorage.setItem("mcgillSignPreset", JSON.stringify(collectState()));
+        notice.textContent = "Preset saved in this browser.";
+      } catch (e) {
+        notice.textContent = "Could not save preset.";
+      }
+      notice.classList.add("is-visible");
+    }
+
+    /* Clear */
+    function clearFields() {
+      [
+        "sku", "category", "name", "description", "price", "unit",
+        "compareAt", "badge", "message", "footerNote",
+        "spec1Label", "spec1Value", "spec2Label", "spec2Value",
+        "spec3Label", "spec3Value", "spec4Label", "spec4Value"
+      ].forEach((id) => setValue(id, ""));
+      render();
+      notice.textContent = "Fields cleared.";
+      notice.classList.add("is-visible");
+    }
+
+    /* Wire up events */
+    fields.forEach((id) => {
+      const el = byId(id);
+      if (el) {
+        el.addEventListener("input", render);
+        el.addEventListener("change", render);
+      }
+    });
+    byId("lookupBtn").addEventListener("click", lookupSampleSku);
+    byId("saveBtn").addEventListener("click", savePreset);
+    byId("clearBtn").addEventListener("click", clearFields);
+    byId("printBtn").addEventListener("click", () => window.print());
+
+    /* Init — restore preset or render defaults */
+    try {
+      const saved = localStorage.getItem("mcgillSignPreset");
+      if (saved) applyState(JSON.parse(saved));
+      else render();
+    } catch (e) {
+      render();
+    }
+  </script>
+
+</body>
+</html>
