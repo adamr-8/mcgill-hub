@@ -578,48 +578,48 @@
     }
     .size-shelf .sign-top { display: none; }
     .size-shelf .sign-body {
-      padding: .08in .16in;
+      padding: .06in .14in .06in .1in;
       display: grid;
-      grid-template-columns: auto minmax(0, 1fr) auto;
-      grid-template-rows: auto auto;
-      gap: .015in .12in;
+      grid-template-columns: .9in minmax(0, 1fr) auto;
+      grid-template-rows: 1fr auto;
+      gap: 0 .1in;
       align-items: center;
       align-content: center;
       background: var(--tan);
     }
 
-    /* Logo — left column */
+    /* Logo — left column, vertically centered */
     .size-shelf .sign-footer { display: contents; }
     .size-shelf .footer-left {
       grid-column: 1;
       grid-row: 1 / 3;
       align-self: center;
-      display: flex;
-      align-items: center;
+      justify-self: center;
     }
     .size-shelf .sign-logo {
-      width: .68in;
+      width: .82in;
       display: block;
     }
-    .size-shelf .footer-note,
-    .size-shelf .trust-strip { display: none; }
+    .size-shelf .footer-note { display: none; }
 
     /* Product name — top row center */
     .size-shelf .product-name {
       grid-column: 2;
       grid-row: 1;
-      font-size: 11pt;
-      line-height: 1.05;
+      font-size: 12pt;
+      line-height: 1.1;
+      align-self: end;
     }
 
     /* Description — bottom row center */
     .size-shelf .product-description {
       grid-column: 2;
       grid-row: 2;
-      font-size: 7pt;
+      font-size: 8pt;
       line-height: 1.15;
       max-height: .35in;
       overflow: hidden;
+      align-self: start;
     }
 
     /* Price — right column, spans rows */
@@ -628,16 +628,17 @@
       grid-row: 1 / 3;
       display: block;
       text-align: right;
+      padding-right: .04in;
     }
     .size-shelf .price-block {
-      font-size: 30pt;
+      font-size: 32pt;
       line-height: .9;
     }
     .size-shelf .price-currency { font-size: .46em; vertical-align: .48em; }
     .size-shelf .price-cents { font-size: .32em; vertical-align: .7em; }
     .size-shelf .unit {
       text-align: right;
-      font-size: 7pt;
+      font-size: 7.5pt;
       padding-top: .01in;
     }
 
@@ -645,6 +646,8 @@
     .size-shelf .compare { display: none; }
     .size-shelf .spec-card { display: none; }
     .size-shelf .message-strip { display: none; }
+    .size-shelf .qr-box { display: none !important; }
+    .size-shelf .trust-strip { display: none !important; }
 
     /* ════════════════════════════════════════════════
        RESPONSIVE
