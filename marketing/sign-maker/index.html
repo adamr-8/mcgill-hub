@@ -609,21 +609,27 @@
     .size-shelf .price-currency { font-size: .46em; vertical-align: .48em; }
     .size-shelf .price-cents { font-size: .32em; vertical-align: .7em; }
 
+    /*
+     * All shelf variants use the .sign as the master grid.
+     * .sign-top, .sign-body, and .sign-footer all get display:contents
+     * so their children participate directly in the .sign grid.
+     */
+    .size-shelf .sign-top { display: contents; }
+    .size-shelf .sign-body { display: contents; }
+
     /* ── OPTION A: Clean (Standard) ──────────────── */
     .size-shelf .sign.theme-standard {
-      grid-template-rows: 1fr;
-    }
-    .size-shelf .sign.theme-standard .sign-top { display: none; }
-    .size-shelf .sign.theme-standard .sign-body {
-      padding: .06in .16in .06in .1in;
-      display: grid;
       grid-template-columns: .88in minmax(0, 1fr) auto;
       grid-template-rows: 1fr auto;
-      gap: 0 .12in;
       align-items: center;
       align-content: center;
+      padding: .06in .16in .06in .1in;
+      gap: 0 .12in;
       background: var(--tan);
     }
+    .size-shelf .sign.theme-standard .sign-badge { display: none; }
+    .size-shelf .sign.theme-standard .sign-category { display: none; }
+    .size-shelf .sign.theme-standard [data-block="sku"] { display: none !important; }
     .size-shelf .sign.theme-standard .footer-left {
       grid-column: 1; grid-row: 1 / 3;
       align-self: center; justify-self: center;
@@ -640,35 +646,42 @@
     }
     .size-shelf .sign.theme-standard .price-row {
       grid-column: 3; grid-row: 1 / 3;
-      display: block; text-align: right; padding-right: .04in;
+      text-align: right; padding-right: .04in;
     }
     .size-shelf .sign.theme-standard .price-block { font-size: 34pt; line-height: .88; }
     .size-shelf .sign.theme-standard .unit { text-align: right; font-size: 8pt; padding-top: .01in; }
 
     /* ── OPTION B: Bold strip (Retail Special) ───── */
     .size-shelf .sign.theme-sale {
-      grid-template-rows: 1fr;
-      grid-template-columns: 1fr auto;
-    }
-    .size-shelf .sign.theme-sale .sign-top { display: none; }
-    .size-shelf .sign.theme-sale .sign-body {
-      grid-column: 1; grid-row: 1;
-      padding: .08in .16in;
-      display: grid;
-      grid-template-columns: 3px minmax(0, 1fr) auto;
-      grid-template-rows: auto auto;
-      gap: 0 .12in;
+      grid-template-columns: 4px minmax(0, 1fr) 1.6in;
+      grid-template-rows: 1fr auto;
       align-items: center;
       align-content: center;
+      padding: .08in .0in .08in .14in;
+      gap: 0 .12in;
       background: var(--dark-green);
     }
-    .size-shelf .sign.theme-sale .sign-body::before {
-      content: '';
+    .size-shelf .sign.theme-sale .sign-badge { display: none; }
+    .size-shelf .sign.theme-sale .sign-category { display: none; }
+    .size-shelf .sign.theme-sale [data-block="sku"] { display: none !important; }
+    .size-shelf .sign.theme-sale .footer-left { display: none; }
+    /* Gold accent bar */
+    .size-shelf .sign.theme-sale::before {
+      content: '' !important;
       grid-column: 1; grid-row: 1 / 3;
-      width: 3px;
-      align-self: stretch;
+      width: 4px; align-self: stretch;
       background: var(--gold);
       border-radius: 2px;
+      border-top: none;
+      position: static; left: auto; right: auto;
+    }
+    .size-shelf .sign.theme-sale::after {
+      display: none;
+    }
+    /* Cut lines for B via outline since pseudo-elements are used */
+    .size-shelf .sign.theme-sale {
+      outline: 1.5px dashed rgba(16,49,43,.28);
+      outline-offset: -1px;
     }
     .size-shelf .sign.theme-sale .product-name {
       grid-column: 2; grid-row: 1;
@@ -679,71 +692,65 @@
       font-size: 9pt; line-height: 1.15; color: rgba(255,255,255,.6);
       max-height: .35in; overflow: hidden; align-self: start;
     }
+    /* Tan price panel */
     .size-shelf .sign.theme-sale .price-row {
       grid-column: 3; grid-row: 1 / 3;
-      display: block; text-align: right;
-      background: var(--tan);
-      padding: .06in .16in;
-      margin: -.08in -.16in -.08in 0;
       align-self: stretch;
-      display: flex; flex-direction: column; align-items: flex-end; justify-content: center;
-      min-width: 1.5in;
+      background: var(--tan);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: .06in .14in;
     }
     .size-shelf .sign.theme-sale .price-block { font-size: 34pt; line-height: .88; color: var(--deep-green); }
-    .size-shelf .sign.theme-sale .unit { font-size: 8pt; color: var(--green); padding-top: .01in; }
-    .size-shelf .sign.theme-sale .footer-left { display: none; }
+    .size-shelf .sign.theme-sale .unit { font-size: 8pt; color: var(--green); padding-top: .01in; text-align: center; }
 
     /* ── OPTION C: Category band (Clearance) ─────── */
     .size-shelf .sign.theme-clearance {
-      grid-template-rows: .28in 1fr;
-      grid-template-columns: 1fr;
-    }
-    .size-shelf .sign.theme-clearance .sign-top {
-      display: flex !important;
-      grid-row: 1;
-      padding: .04in .16in;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--dark-green);
-    }
-    .size-shelf .sign.theme-clearance .sign-badge { display: none; }
-    .size-shelf .sign.theme-clearance .sign-category {
-      font-size: 10pt; color: var(--gold);
-      letter-spacing: .05em; font-weight: 800;
-    }
-    .size-shelf .sign.theme-clearance .sign-sku-top {
-      font-size: 7pt; color: rgba(255,255,255,.45);
-      min-width: auto;
-    }
-    .size-shelf .sign.theme-clearance .sign-body {
-      grid-row: 2;
-      padding: .04in .16in;
-      display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
-      grid-template-rows: auto auto;
-      gap: 0 .14in;
-      align-items: center;
-      align-content: center;
+      grid-template-rows: .3in 1fr auto;
+      align-content: stretch;
       background: var(--tan);
     }
-    .size-shelf .sign.theme-clearance .product-name {
+    /* Dark category band across top */
+    .size-shelf .sign.theme-clearance .sign-badge { display: none; }
+    .size-shelf .sign.theme-clearance .sign-category {
       grid-column: 1; grid-row: 1;
+      font-size: 10pt; color: var(--gold);
+      letter-spacing: .05em; font-weight: 800;
+      background: var(--dark-green);
+      padding: .04in .16in;
+      display: flex; align-items: center;
+    }
+    .size-shelf .sign.theme-clearance [data-block="sku"] {
+      grid-column: 2; grid-row: 1;
+      background: var(--dark-green);
+      padding: .04in .16in;
+      display: flex !important; align-items: center; justify-content: flex-end;
+      font-size: 7pt; color: rgba(255,255,255,.45);
+      min-width: auto; text-align: right;
+    }
+    .size-shelf .sign.theme-clearance .footer-left { display: none; }
+    .size-shelf .sign.theme-clearance .product-name {
+      grid-column: 1; grid-row: 2;
       font-size: 14pt; line-height: 1.1; align-self: end;
+      padding: 0 .16in;
     }
     .size-shelf .sign.theme-clearance .product-description {
-      grid-column: 1; grid-row: 2;
+      grid-column: 1; grid-row: 3;
       font-size: 9pt; line-height: 1.15; align-self: start;
       max-height: .3in; overflow: hidden;
+      padding: 0 .16in;
     }
     .size-shelf .sign.theme-clearance .price-row {
-      grid-column: 2; grid-row: 1 / 3;
-      display: block; text-align: right;
-      padding-left: .1in;
+      grid-column: 2; grid-row: 2 / 4;
+      text-align: right;
+      padding: .04in .16in .04in .1in;
       border-left: 1px solid rgba(16,49,43,.12);
+      display: flex; flex-direction: column;
+      align-items: flex-end; justify-content: center;
     }
     .size-shelf .sign.theme-clearance .price-block { font-size: 32pt; line-height: .88; }
     .size-shelf .sign.theme-clearance .unit { text-align: right; font-size: 8pt; padding-top: .01in; }
-    .size-shelf .sign.theme-clearance .footer-left { display: none; }
 
     /* ════════════════════════════════════════════════
        RESPONSIVE
