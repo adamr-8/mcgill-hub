@@ -780,10 +780,12 @@
             </div>
           </div>
           <div class="actions">
-            <button type="button" class="button ghost" id="lookupBtn">Lookup sample SKU</button>
+            <button type="button" class="button ghost" id="lookupBtn" disabled style="opacity:.5; cursor:default;">SKU Lookup (coming soon)</button>
             <button type="button" class="button ghost" id="clearBtn">Clear fields</button>
           </div>
-          <div class="notice" id="lookupNotice"></div>
+          <div class="notice is-visible" style="font-size:11px; background:rgba(129,131,133,.1); color:var(--gray);">
+            <strong>Roadmap:</strong> SKU lookup will connect to the PIM in a future release — auto-filling product details, images, and brand assets from a single scan or SKU entry.
+          </div>
         </fieldset>
 
         <!-- Product Copy -->
