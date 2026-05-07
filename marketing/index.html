@@ -169,6 +169,105 @@
     .card-tag.pdf { background: rgba(200,50,50,.1); color: #c03232; }
     .card-tag.html { background: rgba(0,120,212,.08); color: #005a9e; }
 
+    /* ── Asset Download Cards ── */
+    .asset-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .asset-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .asset-preview {
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      position: relative;
+    }
+    .asset-preview img {
+      max-height: 72px;
+      max-width: 80%;
+      object-fit: contain;
+    }
+    .asset-use-cases {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-items: flex-end;
+    }
+    .use-tag {
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 8px;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+      white-space: nowrap;
+    }
+    .use-tag.web { background: rgba(0,120,212,.1); color: #005a9e; }
+    .use-tag.print { background: rgba(200,50,50,.1); color: #c03232; }
+    .use-tag.email { background: rgba(197,168,78,.15); color: var(--brown); }
+    .use-tag.social { background: rgba(41,106,60,.1); color: var(--green); }
+    .use-tag.merch { background: rgba(129,131,133,.12); color: var(--gray); }
+    .asset-info {
+      padding: 14px 18px;
+      border-top: 1px solid var(--border);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .asset-info h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 4px;
+    }
+    .asset-info .asset-desc {
+      font-size: 11px;
+      color: var(--gray);
+      line-height: 1.5;
+      flex: 1;
+    }
+    .asset-info .asset-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .asset-meta .file-info {
+      font-size: 10px;
+      color: var(--gray);
+      font-family: monospace;
+    }
+    .dl-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: var(--green);
+      color: var(--white);
+      font-size: 11px;
+      font-weight: 700;
+      text-decoration: none;
+      letter-spacing: .01em;
+      transition: transform .12s, filter .12s;
+      white-space: nowrap;
+    }
+    .dl-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
+    .dl-btn svg { width: 12px; height: 12px; fill: currentColor; }
+
     footer {
       background: var(--dark-green); margin-top: 64px; padding: 32px 24px;
       text-align: center; border-top: 3px solid var(--gold);
@@ -234,6 +333,155 @@
         <p>7 Oro Commerce transactional templates — welcome, order, shipping, cart, RFQ, invoice, password.</p>
         <span class="card-tag html">Reference</span>
       </a>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         ASSET DOWNLOADS
+         ═══════════════════════════════════════════════ -->
+    <div id="assets" class="section-header">
+      <h2>Asset Downloads</h2>
+      <p>Approved McGill logo files and brand documents. Right-click → Save, or use the download buttons.</p>
+    </div>
+
+    <div class="asset-grid">
+
+      <!-- Primary Logo — transparent bg -->
+      <div class="asset-card">
+        <div class="asset-preview" style="background: var(--tan);">
+          <img src="../assets/McGill-Hose-Logo-T-2026.png" alt="Primary Logo — Transparent">
+          <div class="asset-use-cases">
+            <span class="use-tag web">Website</span>
+            <span class="use-tag print">Print</span>
+            <span class="use-tag email">Email</span>
+          </div>
+        </div>
+        <div class="asset-info">
+          <h4>Primary Logo — Transparent</h4>
+          <div class="asset-desc">Full-color logo on transparent background. Use on light surfaces: white, tan (#F1F2EA), or light gray. The go-to for most applications.</div>
+          <div class="asset-meta">
+            <span class="file-info">PNG · RGBA · 957×358</span>
+            <a href="../assets/McGill-Hose-Logo-T-2026.png" download class="dl-btn"><svg viewBox="0 0 16 16"><path d="M8 12L3 7h3V1h4v6h3L8 12zm-5 2v1h10v-1H3z"/></svg> Download</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Primary Logo — white bg -->
+      <div class="asset-card">
+        <div class="asset-preview" style="background: var(--tan);">
+          <img src="../assets/McGill-Hose-Logo---2026.png" alt="Primary Logo — White Background">
+          <div class="asset-use-cases">
+            <span class="use-tag print">Print</span>
+            <span class="use-tag social">Social</span>
+          </div>
+        </div>
+        <div class="asset-info">
+          <h4>Primary Logo — Solid Background</h4>
+          <div class="asset-desc">Full-color logo with white/opaque background. Use when transparency isn't supported — Word docs, some print workflows, social media profile images.</div>
+          <div class="asset-meta">
+            <span class="file-info">PNG · RGB · 957×358</span>
+            <a href="../assets/McGill-Hose-Logo---2026.png" download class="dl-btn"><svg viewBox="0 0 16 16"><path d="M8 12L3 7h3V1h4v6h3L8 12zm-5 2v1h10v-1H3z"/></svg> Download</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- White Reversed — Horizontal -->
+      <div class="asset-card">
+        <div class="asset-preview" style="background: var(--dark-green);">
+          <img src="../assets/McGill-Hose-Logo-white-vector.png" alt="White Reversed Logo">
+          <div class="asset-use-cases">
+            <span class="use-tag web">Website</span>
+            <span class="use-tag email">Email</span>
+            <span class="use-tag merch">Merch</span>
+          </div>
+        </div>
+        <div class="asset-info">
+          <h4>White Reversed — Horizontal</h4>
+          <div class="asset-desc">All-white logo on transparent background. Use on dark green (#10312B, #094A27), brand green (#296A3C), photo overlays, or dark merchandise.</div>
+          <div class="asset-meta">
+            <span class="file-info">PNG · RGBA · 500×500</span>
+            <a href="../assets/McGill-Hose-Logo-white-vector.png" download class="dl-btn"><svg viewBox="0 0 16 16"><path d="M8 12L3 7h3V1h4v6h3L8 12zm-5 2v1h10v-1H3z"/></svg> Download</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- White Reversed — Square -->
+      <div class="asset-card">
+        <div class="asset-preview" style="background: var(--green);">
+          <img src="../assets/McGill-Hose-Logo-white-vector-square.png" alt="White Reversed Square">
+          <div class="asset-use-cases">
+            <span class="use-tag social">Social</span>
+            <span class="use-tag web">Favicon</span>
+          </div>
+        </div>
+        <div class="asset-info">
+          <h4>White Reversed — Square</h4>
+          <div class="asset-desc">Square-format white logo on transparent background. Ideal for social media avatars, favicons, app icons, and anywhere a 1:1 ratio is required.</div>
+          <div class="asset-meta">
+            <span class="file-info">PNG · RGBA · 500×500</span>
+            <a href="../assets/McGill-Hose-Logo-white-vector-square.png" download class="dl-btn"><svg viewBox="0 0 16 16"><path d="M8 12L3 7h3V1h4v6h3L8 12zm-5 2v1h10v-1H3z"/></svg> Download</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dark Green on Transparent -->
+      <div class="asset-card">
+        <div class="asset-preview" style="background: var(--white); border-bottom: 1px solid var(--border);">
+          <img src="../assets/10312B_McGill-Hose-Logo---2026.png" alt="Dark Green Single Color">
+          <div class="asset-use-cases">
+            <span class="use-tag print">Print</span>
+            <span class="use-tag merch">Engrave</span>
+          </div>
+        </div>
+        <div class="asset-info">
+          <h4>Single Color — Dark Green</h4>
+          <div class="asset-desc">Single-ink version in dark green (#10312B) on transparent background. Use for single-color printing, engraving, embossing, and fax.</div>
+          <div class="asset-meta">
+            <span class="file-info">PNG · RGBA · 957×358</span>
+            <a href="../assets/10312B_McGill-Hose-Logo---2026.png" download class="dl-btn"><svg viewBox="0 0 16 16"><path d="M8 12L3 7h3V1h4v6h3L8 12zm-5 2v1h10v-1H3z"/></svg> Download</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- White on dark background -->
+      <div class="asset-card">
+        <div class="asset-preview" style="background: var(--dark-green);">
+          <img src="../assets/white_McGill-Hose-Logo---2026.png" alt="White Logo — Large Format">
+          <div class="asset-use-cases">
+            <span class="use-tag print">Print</span>
+            <span class="use-tag merch">Signage</span>
+          </div>
+        </div>
+        <div class="asset-info">
+          <h4>White — Large Format</h4>
+          <div class="asset-desc">High-res white logo (1000px wide) on transparent background. Use for large-format printing, banners, trade show signage, and vehicle wraps on dark surfaces.</div>
+          <div class="asset-meta">
+            <span class="file-info">PNG · RGBA · 1000×374</span>
+            <a href="../assets/white_McGill-Hose-Logo---2026.png" download class="dl-btn"><svg viewBox="0 0 16 16"><path d="M8 12L3 7h3V1h4v6h3L8 12zm-5 2v1h10v-1H3z"/></svg> Download</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Brand Guide PDF -->
+      <div class="asset-card">
+        <div class="asset-preview" style="background: linear-gradient(135deg, var(--dark-green), var(--deep-green));">
+          <div style="text-align:center; color: var(--white);">
+            <div style="font-size:32px; font-weight:900; letter-spacing:-.02em; line-height:1;">Brand Guide</div>
+            <div style="font-size:12px; font-weight:600; color:var(--gold); margin-top:6px; letter-spacing:.04em; text-transform:uppercase;">v3.9 · 2026</div>
+          </div>
+          <div class="asset-use-cases">
+            <span class="use-tag print">Reference</span>
+          </div>
+        </div>
+        <div class="asset-info">
+          <h4>McGill Brand Guide v3.9</h4>
+          <div class="asset-desc">Complete brand standards — typography, color palette with WCAG ratios, logo usage rules, certification placement, and trust signal guidelines.</div>
+          <div class="asset-meta">
+            <span class="file-info">PDF · 652 KB</span>
+            <a href="../assets/McGill_Brand_Guide_v3.9.pdf" download class="dl-btn"><svg viewBox="0 0 16 16"><path d="M8 12L3 7h3V1h4v6h3L8 12zm-5 2v1h10v-1H3z"/></svg> Download</a>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- ═══════════════════════════════════════════════
