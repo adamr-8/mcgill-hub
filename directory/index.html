@@ -237,7 +237,7 @@
             <button class="add-btn" style="font-size:11px; padding:6px 12px;" onclick="importCsv()">Import All</button>
           </div>
         </div>
-        <div style="font-size:11px; color:var(--gray); margin-bottom:8px;">Expected columns: Name, Title, Department, Email, Phone, Extension, Cell, Anniversary Date, Notes</div>
+        <div style="font-size:11px; color:var(--gray); margin-bottom:8px;">Columns auto-detected. Supports: Name (or First/Last), Title, Department, Supervisor, Location, Email, Phone, Extension, Cell, DOH Month + Hire Year (or Anniversary Date), Notes</div>
         <table id="csvTable" style="width:100%; border-collapse:collapse; font-size:12px;">
         </table>
       </div>
@@ -366,7 +366,12 @@
       html += '<div class="org">' + esc(d.org || '') + '</div>';
       html += '<h3>' + esc(d.name || '') + '</h3>';
       if (d.title) html += '<div class="title">' + esc(d.title) + '</div>';
-      if (d.department) html += '<div class="title" style="color:var(--green); font-weight:600;">' + esc(d.department) + '</div>';
+      if (d.department) {
+        var deptLine = esc(d.department);
+        if (d.location) deptLine += ' <span style="color:var(--gray); font-weight:500;">· ' + esc(d.location) + '</span>';
+        html += '<div class="title" style="color:var(--green); font-weight:600;">' + deptLine + '</div>';
+      }
+      if (d.supervisor) html += '<div class="contact-detail" style="font-size:11px; color:var(--gray);">Reports to: ' + esc(d.supervisor) + '</div>';
       if (d.email) html += '<div class="contact-detail"><a href="mailto:' + esc(d.email) + '">' + esc(d.email) + '</a></div>';
       if (d.phone) {
         var phoneStr = esc(d.phone);
@@ -486,13 +491,19 @@
         var colMap = {};
         var fieldNames = {
           name: ['name','fullname','employeename'],
-          title: ['title','role','jobtitle','position'],
+          firstname: ['firstname','first','givenname'],
+          lastname: ['lastname','last','surname','familyname'],
+          title: ['title','role','jobtitle','position','titlerole'],
           department: ['department','dept','division'],
+          supervisor: ['supervisor','manager','supervisormanager','reportsto'],
+          location: ['location','loc','office','site'],
           email: ['email','emailaddress'],
           phone: ['phone','phonenumber','officephone','work'],
           ext: ['ext','extension','x'],
           cell: ['cell','cellphone','mobile','mobilephone'],
           anniversary: ['anniversary','anniversarydate','startdate','hiredate','dateofhire'],
+          dohmonth: ['dohmonth','hiremonth','startmonth'],
+          hireyear: ['hireyear','startyear','year'],
           note: ['notes','note','comments']
         };
         Object.keys(fieldNames).forEach(function(field) {
@@ -501,23 +512,39 @@
           }
         });
 
+        var monthMap = {january:'01',february:'02',march:'03',april:'04',may:'05',june:'06',july:'07',august:'08',september:'09',october:'10',november:'11',december:'12'};
+
         pendingCsvRows = [];
         for (var r = 1; r < lines.length; r++) {
           var cols = parseCSVLine(lines[r]);
           if (!cols.length) continue;
           var row = {};
           Object.keys(colMap).forEach(function(f) { row[f] = (cols[colMap[f]] || '').trim(); });
+          if (row.firstname && row.lastname) {
+            row.name = row.firstname + ' ' + row.lastname;
+          } else if (row.lastname && !row.firstname) {
+            row.name = row.lastname;
+          }
+          if (!row.anniversary && row.dohmonth && row.hireyear) {
+            var m = monthMap[(row.dohmonth || '').toLowerCase()] || '01';
+            row.anniversary = row.hireyear + '-' + m + '-01';
+          }
           if (row.name) pendingCsvRows.push(row);
         }
 
         var preview = document.getElementById('csvPreview');
         var table = document.getElementById('csvTable');
         document.getElementById('csvCount').textContent = pendingCsvRows.length + ' employees found';
-        var th = '<thead><tr style="background:var(--tan);"><th style="padding:6px 8px; text-align:left; font-size:11px; border-bottom:1px solid var(--border);">Name</th><th style="padding:6px 8px; text-align:left; font-size:11px; border-bottom:1px solid var(--border);">Title</th><th style="padding:6px 8px; text-align:left; font-size:11px; border-bottom:1px solid var(--border);">Dept</th><th style="padding:6px 8px; text-align:left; font-size:11px; border-bottom:1px solid var(--border);">Email</th><th style="padding:6px 8px; text-align:left; font-size:11px; border-bottom:1px solid var(--border);">Phone</th><th style="padding:6px 8px; text-align:left; font-size:11px; border-bottom:1px solid var(--border);">Ext</th><th style="padding:6px 8px; text-align:left; font-size:11px; border-bottom:1px solid var(--border);">Cell</th><th style="padding:6px 8px; text-align:left; font-size:11px; border-bottom:1px solid var(--border);">Anniversary</th></tr></thead>';
+        var thStyle = 'padding:6px 8px; text-align:left; font-size:11px; border-bottom:1px solid var(--border);';
+        var previewCols = ['name','title','department','supervisor','location','email','phone','ext','cell','anniversary'];
+        var previewLabels = ['Name','Title','Dept','Supervisor','Location','Email','Phone','Ext','Cell','Anniversary'];
+        var th = '<thead><tr style="background:var(--tan);">';
+        previewLabels.forEach(function(l) { th += '<th style="' + thStyle + '">' + l + '</th>'; });
+        th += '</tr></thead>';
         var tb = '<tbody>';
         pendingCsvRows.forEach(function(row) {
           tb += '<tr>';
-          ['name','title','department','email','phone','ext','cell','anniversary'].forEach(function(f) {
+          previewCols.forEach(function(f) {
             tb += '<td style="padding:5px 8px; font-size:12px; border-bottom:1px solid var(--border);">' + esc(row[f] || '') + '</td>';
           });
           tb += '</tr>';
@@ -562,6 +589,8 @@
           name: row.name || '',
           title: row.title || '',
           department: row.department || '',
+          supervisor: row.supervisor || '',
+          location: row.location || '',
           org: 'McGill Hose & Coupling',
           email: row.email || '',
           phone: row.phone || '',
