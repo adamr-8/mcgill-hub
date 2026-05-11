@@ -241,9 +241,22 @@
         <table id="csvTable" style="width:100%; border-collapse:collapse; font-size:12px;">
         </table>
       </div>
-      <div class="search-bar">
-        <input type="text" placeholder="Search employees..." oninput="filterCards('employee', this.value)">
+      <div class="search-bar" style="flex-wrap:wrap;">
+        <input type="text" placeholder="Search employees..." oninput="filterEmployees()" id="emp-search" style="flex:1; min-width:200px;">
+        <select id="emp-dept" onchange="filterEmployees()" style="padding:8px 12px; border:1px solid var(--border); border-radius:8px; font:inherit; font-size:13px; min-width:140px;">
+          <option value="">All Departments</option>
+        </select>
+        <select id="emp-loc" onchange="filterEmployees()" style="padding:8px 12px; border:1px solid var(--border); border-radius:8px; font:inherit; font-size:13px; min-width:120px;">
+          <option value="">All Locations</option>
+        </select>
+        <select id="emp-sort" onchange="loadContacts()" style="padding:8px 12px; border:1px solid var(--border); border-radius:8px; font:inherit; font-size:13px; min-width:140px;">
+          <option value="name">Sort: Name</option>
+          <option value="department">Sort: Department</option>
+          <option value="location">Sort: Location</option>
+          <option value="anniversary">Sort: Anniversary</option>
+        </select>
       </div>
+      <div id="emp-count" style="font-size:12px; color:var(--gray); margin-bottom:12px;"></div>
       <div class="contact-grid" id="grid-employee"></div>
     </div>
 
@@ -361,7 +374,7 @@
       var catClass = d.category === 'employee' ? 'employee' : d.category === 'vendor' ? 'vendor' : 'industry';
       var catLabel = d.category === 'employee' ? 'Employee' : d.category === 'vendor' ? 'Vendor' : 'Industry';
       var searchStr = ((d.name||'') + ' ' + (d.org||'') + ' ' + (d.title||'') + ' ' + (d.department||'')).toLowerCase();
-      var html = '<div class="contact-card" data-search="' + esc(searchStr) + '">';
+      var html = '<div class="contact-card" data-search="' + esc(searchStr) + '" data-dept="' + esc(d.department || '') + '" data-loc="' + esc(d.location || '') + '">';
       html += '<span class="cat-badge ' + catClass + '">' + catLabel + '</span>';
       html += '<div class="org">' + esc(d.org || '') + '</div>';
       html += '<h3>' + esc(d.name || '') + '</h3>';
@@ -397,21 +410,83 @@
       return el.innerHTML;
     }
 
+    var allDocs = [];
+
     function loadContacts() {
-      db.collection(COLLECTION).orderBy('org').get().then(function(snap) {
+      var sortField = document.getElementById('emp-sort') ? document.getElementById('emp-sort').value : 'name';
+      db.collection(COLLECTION).get().then(function(snap) {
+        allDocs = [];
+        snap.forEach(function(doc) { allDocs.push(doc); });
+
         var byCategory = { industry: [], employee: [], vendor: [] };
-        snap.forEach(function(doc) {
-          var cat = doc.data().category || 'industry';
-          if (!byCategory[cat]) byCategory[cat] = [];
-          byCategory[cat].push(renderCard(doc));
+        var departments = new Set();
+        var locations = new Set();
+
+        var empDocs = allDocs.filter(function(doc) { return doc.data().category === 'employee'; });
+        empDocs.forEach(function(doc) {
+          var d = doc.data();
+          if (d.department) departments.add(d.department);
+          if (d.location) locations.add(d.location);
         });
+
+        empDocs.sort(function(a, b) {
+          var da = a.data(), db2 = b.data();
+          var va = (da[sortField] || '').toLowerCase();
+          var vb = (db2[sortField] || '').toLowerCase();
+          return va < vb ? -1 : va > vb ? 1 : 0;
+        });
+
+        empDocs.forEach(function(doc) { byCategory.employee.push(renderCard(doc)); });
+        allDocs.filter(function(doc) { return doc.data().category === 'industry'; })
+          .sort(function(a,b) { return (a.data().org||'').localeCompare(b.data().org||''); })
+          .forEach(function(doc) { byCategory.industry.push(renderCard(doc)); });
+        allDocs.filter(function(doc) { return doc.data().category === 'vendor'; })
+          .sort(function(a,b) { return (a.data().org||'').localeCompare(b.data().org||''); })
+          .forEach(function(doc) { byCategory.vendor.push(renderCard(doc)); });
+
         ['industry', 'employee', 'vendor'].forEach(function(cat) {
           var grid = document.getElementById('grid-' + cat);
           grid.innerHTML = byCategory[cat].length
             ? byCategory[cat].join('')
             : '<div class="empty-state">No ' + cat + ' contacts yet. Click "+ Add" to create one.</div>';
         });
+
+        populateDropdown('emp-dept', departments);
+        populateDropdown('emp-loc', locations);
+        filterEmployees();
       });
+    }
+
+    function populateDropdown(id, valuesSet) {
+      var sel = document.getElementById(id);
+      if (!sel) return;
+      var current = sel.value;
+      var firstOpt = sel.options[0].outerHTML;
+      sel.innerHTML = firstOpt;
+      Array.from(valuesSet).sort().forEach(function(v) {
+        var opt = document.createElement('option');
+        opt.value = v; opt.textContent = v;
+        sel.appendChild(opt);
+      });
+      sel.value = current;
+    }
+
+    function filterEmployees() {
+      var grid = document.getElementById('grid-employee');
+      var query = (document.getElementById('emp-search').value || '').toLowerCase().trim();
+      var dept = document.getElementById('emp-dept').value;
+      var loc = document.getElementById('emp-loc').value;
+      var cards = grid.querySelectorAll('.contact-card');
+      var shown = 0;
+      cards.forEach(function(card) {
+        var matchSearch = !query || card.dataset.search.indexOf(query) !== -1;
+        var matchDept = !dept || (card.dataset.dept || '') === dept;
+        var matchLoc = !loc || (card.dataset.loc || '') === loc;
+        var show = matchSearch && matchDept && matchLoc;
+        card.style.display = show ? '' : 'none';
+        if (show) shown++;
+      });
+      document.getElementById('emp-count').textContent = shown + ' of ' + cards.length + ' employees';
     }
 
     /* ── Search / filter ── */
