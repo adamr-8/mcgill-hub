@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>McGill Hub — Calendar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="../assets/McGill-Hose-Logo-white-vector-square.png">
+  <style>
+    :root {
+      --green: #296A3C; --dark-green: #10312B; --deep-green: #094A27;
+      --tan: #F1F2EA; --gold: #C5A84E; --brown: #80693C;
+      --white: #FFFFFF; --light: #F8F8F8; --gray: #818385;
+      --dark: #262626; --text: #3C3F44; --border: #E8E8E4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--light); color: var(--text); }
+
+    nav {
+      background: var(--dark-green); padding: 0 24px; height: 56px;
+      display: flex; align-items: center; gap: 32px;
+      border-bottom: 3px solid var(--gold); position: sticky; top: 0; z-index: 100;
+    }
+    nav .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    nav .logo img { height: 32px; }
+    nav .logo span { color: var(--tan); font-size: 16px; font-weight: 700; }
+    nav .links { display: flex; gap: 4px; margin-left: auto; }
+    nav .links a {
+      color: rgba(241,242,234,.7); text-decoration: none; font-size: 13px; font-weight: 500;
+      padding: 8px 16px; border-radius: 6px; transition: all .15s;
+    }
+    nav .links a:hover { color: var(--tan); background: rgba(255,255,255,.08); }
+    nav .links a.active { color: var(--gold); background: rgba(197,168,78,.12); }
+
+    .page-header {
+      background: linear-gradient(135deg, var(--dark-green), var(--deep-green));
+      padding: 40px 24px; position: relative;
+    }
+    .page-header::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: var(--gold); }
+    .page-header .inner { max-width: 1100px; margin: 0 auto; }
+    .page-header h1 { font-size: 28px; font-weight: 800; color: var(--white); letter-spacing: -.03em; }
+    .page-header p { font-size: 14px; color: rgba(255,255,255,.65); margin-top: 6px; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    .section-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin: 24px 0 16px;
+    }
+    .section-bar h2 { font-size: 20px; font-weight: 700; color: var(--dark); letter-spacing: -.02em; }
+
+    .add-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: 999px;
+      background: var(--green); color: var(--white);
+      font-size: 12px; font-weight: 700; border: none;
+      cursor: pointer; transition: transform .12s, filter .12s;
+    }
+    .add-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
+
+    .filter-row {
+      display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap;
+    }
+    .filter-chip {
+      padding: 6px 14px; border-radius: 999px; font-size: 11px; font-weight: 700;
+      border: 1px solid var(--border); background: var(--white); color: var(--text);
+      cursor: pointer; transition: all .15s; text-transform: uppercase; letter-spacing: .03em;
+    }
+    .filter-chip:hover { border-color: var(--green); }
+    .filter-chip.active { background: var(--green); color: var(--white); border-color: var(--green); }
+
+    .timeline { display: flex; flex-direction: column; gap: 12px; }
+
+    .month-header {
+      font-size: 14px; font-weight: 800; color: var(--gold);
+      text-transform: uppercase; letter-spacing: .05em;
+      margin-top: 12px; padding-bottom: 6px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .event-card {
+      background: var(--white); border: 1px solid var(--border); border-radius: 10px;
+      padding: 16px 20px; display: grid;
+      grid-template-columns: 56px 1fr auto; gap: 16px; align-items: center;
+    }
+    .event-date {
+      text-align: center; background: var(--tan); border-radius: 8px; padding: 8px 4px;
+    }
+    .event-date .day { font-size: 22px; font-weight: 800; color: var(--deep-green); line-height: 1; }
+    .event-date .mon { font-size: 9px; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
+    .event-info h3 { font-size: 14px; font-weight: 700; color: var(--dark); }
+    .event-info p { font-size: 12px; color: var(--gray); margin-top: 2px; line-height: 1.4; }
+    .event-cat {
+      display: inline-block; font-size: 9px; font-weight: 700; padding: 2px 8px;
+      border-radius: 8px; text-transform: uppercase; letter-spacing: .03em; white-space: nowrap;
+    }
+    .event-cat.industry-event { background: rgba(41,106,60,.1); color: var(--green); }
+    .event-cat.company { background: rgba(0,120,212,.08); color: #005a9e; }
+    .event-cat.deadline { background: rgba(200,50,50,.1); color: #c03232; }
+    .event-cat.training { background: rgba(197,168,78,.15); color: var(--brown); }
+
+    .event-card .added-by {
+      font-size: 10px; color: var(--gray); grid-column: 2;
+    }
+
+    .empty-state {
+      text-align: center; padding: 48px 24px; color: var(--gray); font-size: 14px;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.45); z-index: 200;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--white); border-radius: 12px;
+      width: 90%; max-width: 520px; max-height: 85vh;
+      overflow-y: auto; padding: 24px;
+    }
+    .modal h2 { font-size: 18px; font-weight: 700; color: var(--dark); margin-bottom: 16px; }
+    .form-grid { display: grid; gap: 12px; }
+    .form-row { display: grid; gap: 4px; }
+    .form-row.two-col { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-row label {
+      font-size: 11px; font-weight: 700; color: var(--deep-green);
+      text-transform: uppercase; letter-spacing: .02em;
+    }
+    .form-row input, .form-row select, .form-row textarea {
+      width: 100%; padding: 8px 10px; border: 1px solid var(--border);
+      border-radius: 8px; font: inherit; font-size: 13px; outline: none;
+    }
+    .form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color: var(--green); }
+    .form-row textarea { resize: vertical; min-height: 60px; }
+    .form-actions {
+      display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px;
+    }
+    .form-actions button {
+      padding: 8px 20px; border-radius: 999px; font-size: 13px;
+      font-weight: 700; cursor: pointer; border: none;
+    }
+    .btn-cancel { background: var(--tan); color: var(--text); }
+    .btn-save { background: var(--green); color: var(--white); }
+    .btn-save:hover { filter: brightness(1.05); }
+
+    footer {
+      background: var(--dark-green); margin-top: 64px; padding: 32px 24px;
+      text-align: center; border-top: 3px solid var(--gold);
+    }
+    footer p { font-size: 12px; color: rgba(255,255,255,.4); }
+
+    @media (max-width: 768px) {
+      .event-card { grid-template-columns: 48px 1fr; }
+      .event-cat { grid-column: 2; }
+      nav .links a { padding: 6px 10px; font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="../index.html" class="logo">
+      <img src="../assets/McGill-Hose-Logo-white-vector.png" alt="McGill">
+      <span>McGill Hub</span>
+    </a>
+    <div class="links">
+      <a href="../index.html">Home</a>
+      <a href="../marketing/index.html">Marketing</a>
+      <a href="../sales/index.html">Sales &amp; Strategy</a>
+      <a href="../directory/index.html">Directory</a>
+      <a href="index.html" class="active">Calendar</a>
+    </div>
+  </nav>
+
+  <section class="page-header">
+    <div class="inner">
+      <h1>Calendar</h1>
+      <p>Key dates, deadlines, industry events, and company milestones. Shared across the team.</p>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="section-bar">
+      <h2>Upcoming</h2>
+      <button class="add-btn" onclick="openModal()">+ Add Event</button>
+    </div>
+
+    <div class="filter-row">
+      <button class="filter-chip active" data-filter="all" onclick="setFilter('all', this)">All</button>
+      <button class="filter-chip" data-filter="industry-event" onclick="setFilter('industry-event', this)">Industry Events</button>
+      <button class="filter-chip" data-filter="company" onclick="setFilter('company', this)">Company</button>
+      <button class="filter-chip" data-filter="deadline" onclick="setFilter('deadline', this)">Deadlines</button>
+      <button class="filter-chip" data-filter="training" onclick="setFilter('training', this)">Training</button>
+    </div>
+
+    <div class="timeline" id="timeline"></div>
+  </div>
+
+  <!-- Add Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <h2>Add Event</h2>
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="f-title">Event name *</label>
+          <input id="f-title" placeholder="HSAW, NAHAD Annual, Store Opening...">
+        </div>
+        <div class="form-row two-col">
+          <div class="form-row">
+            <label for="f-date">Date *</label>
+            <input id="f-date" type="date">
+          </div>
+          <div class="form-row">
+            <label for="f-enddate">End date</label>
+            <input id="f-enddate" type="date">
+          </div>
+        </div>
+        <div class="form-row">
+          <label for="f-category">Category *</label>
+          <select id="f-category">
+            <option value="industry-event">Industry Event</option>
+            <option value="company">Company</option>
+            <option value="deadline">Deadline</option>
+            <option value="training">Training</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="f-desc">Description</label>
+          <textarea id="f-desc" placeholder="Details, links, what to prepare..."></textarea>
+        </div>
+        <div class="form-row">
+          <label for="f-addedby">Your name</label>
+          <input id="f-addedby" placeholder="Who's adding this?">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-save" onclick="saveEvent()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 McGill Hose &amp; Coupling, Inc. Internal use only.</p>
+  </footer>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script>
+    firebase.initializeApp({
+      apiKey: "AIzaSyAfNXGpOuSCyB5-kJkzgyd5zeOP7aANCPs",
+      authDomain: "mcgill-hose-tools.firebaseapp.com",
+      projectId: "mcgill-hose-tools",
+      storageBucket: "mcgill-hose-tools.firebasestorage.app",
+      messagingSenderId: "332662848673",
+      appId: "1:332662848673:web:6fbbf79e0cd7eaedd2c4e0"
+    });
+    var db = firebase.firestore();
+    var COLLECTION = 'calendar';
+    var activeFilter = 'all';
+    var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    function esc(s) {
+      var el = document.createElement('span');
+      el.textContent = s || '';
+      return el.innerHTML;
+    }
+
+    /* ── Filter ── */
+    function setFilter(cat, btn) {
+      activeFilter = cat;
+      document.querySelectorAll('.filter-chip').forEach(function(c) { c.classList.remove('active'); });
+      btn.classList.add('active');
+      renderEvents();
+    }
+
+    /* ── Load and render ── */
+    var allEvents = [];
+
+    function loadEvents() {
+      db.collection(COLLECTION).orderBy('date').get().then(function(snap) {
+        allEvents = [];
+        snap.forEach(function(doc) {
+          var d = doc.data();
+          d._id = doc.id;
+          allEvents.push(d);
+        });
+        renderEvents();
+      });
+    }
+
+    function renderEvents() {
+      var timeline = document.getElementById('timeline');
+      var today = new Date().toISOString().slice(0, 10);
+      var filtered = allEvents.filter(function(e) {
+        var endDate = e.endDate || e.date;
+        if (endDate < today) return false;
+        if (activeFilter !== 'all' && e.category !== activeFilter) return false;
+        return true;
+      });
+
+      if (!filtered.length) {
+        timeline.innerHTML = '<div class="empty-state">No upcoming events. Click "+ Add Event" to create one.</div>';
+        return;
+      }
+
+      var html = '';
+      var currentMonth = '';
+      filtered.forEach(function(e) {
+        var dt = new Date(e.date + 'T00:00:00');
+        var monthKey = MONTHS[dt.getMonth()] + ' ' + dt.getFullYear();
+        if (monthKey !== currentMonth) {
+          currentMonth = monthKey;
+          html += '<div class="month-header">' + monthKey + '</div>';
+        }
+        var dayStr = dt.getDate();
+        var monStr = MONTHS[dt.getMonth()];
+        var catLabel = e.category === 'industry-event' ? 'Industry Event' :
+                       e.category === 'company' ? 'Company' :
+                       e.category === 'deadline' ? 'Deadline' : 'Training';
+        var dateRange = '';
+        if (e.endDate && e.endDate !== e.date) {
+          var end = new Date(e.endDate + 'T00:00:00');
+          dateRange = ' — ' + MONTHS[end.getMonth()] + ' ' + end.getDate();
+        }
+
+        html += '<div class="event-card" data-cat="' + e.category + '">';
+        html += '<div class="event-date"><div class="day">' + dayStr + '</div><div class="mon">' + monStr + '</div></div>';
+        html += '<div class="event-info"><h3>' + esc(e.title) + dateRange + '</h3>';
+        if (e.description) html += '<p>' + esc(e.description) + '</p>';
+        html += '</div>';
+        html += '<span class="event-cat ' + e.category + '">' + catLabel + '</span>';
+        if (e.addedBy) html += '<div class="added-by">Added by ' + esc(e.addedBy) + '</div>';
+        html += '</div>';
+      });
+      timeline.innerHTML = html;
+    }
+
+    /* ── Modal ── */
+    function openModal() {
+      ['f-title','f-date','f-enddate','f-desc','f-addedby'].forEach(function(id) {
+        document.getElementById(id).value = '';
+      });
+      document.getElementById('f-category').value = 'industry-event';
+      document.getElementById('modalOverlay').classList.add('open');
+    }
+
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('open');
+    }
+
+    function saveEvent() {
+      var title = document.getElementById('f-title').value.trim();
+      var date = document.getElementById('f-date').value;
+      if (!title || !date) { alert('Event name and date are required.'); return; }
+
+      var data = {
+        title: title,
+        date: date,
+        endDate: document.getElementById('f-enddate').value || '',
+        category: document.getElementById('f-category').value,
+        description: document.getElementById('f-desc').value.trim(),
+        addedBy: document.getElementById('f-addedby').value.trim(),
+        createdAt: Date.now()
+      };
+
+      db.collection(COLLECTION).add(data).then(function() {
+        closeModal();
+        loadEvents();
+      });
+    }
+
+    /* ── Init ── */
+    loadEvents();
+  </script>
+
+</body>
+</html>
