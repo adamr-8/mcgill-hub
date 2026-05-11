@@ -222,7 +222,24 @@
     <div class="tab-panel" id="tab-employees">
       <div class="section-bar">
         <h2>Employee Directory</h2>
-        <button class="add-btn" onclick="openModal('employee')">+ Add Employee</button>
+        <div style="display:flex; gap:8px;">
+          <button class="add-btn" onclick="document.getElementById('csvInput').click()" style="background:var(--dark-green);">Upload CSV</button>
+          <button class="add-btn" onclick="openModal('employee')">+ Add Employee</button>
+          <input type="file" id="csvInput" accept=".csv" style="display:none;" onchange="handleCsvUpload(this)">
+        </div>
+      </div>
+      <div id="csvPreview" style="display:none; margin-bottom:16px; background:var(--white); border:1px solid var(--border); border-radius:12px; padding:16px; overflow-x:auto;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+          <h3 style="font-size:14px; font-weight:700; color:var(--dark);">CSV Preview</h3>
+          <div style="display:flex; gap:8px;">
+            <span id="csvCount" style="font-size:12px; color:var(--gray); align-self:center;"></span>
+            <button class="add-btn" style="background:var(--tan); color:var(--text); font-size:11px; padding:6px 12px;" onclick="cancelCsv()">Cancel</button>
+            <button class="add-btn" style="font-size:11px; padding:6px 12px;" onclick="importCsv()">Import All</button>
+          </div>
+        </div>
+        <div style="font-size:11px; color:var(--gray); margin-bottom:8px;">Expected columns: Name, Title, Department, Email, Phone, Extension, Cell, Anniversary Date, Notes</div>
+        <table id="csvTable" style="width:100%; border-collapse:collapse; font-size:12px;">
+        </table>
       </div>
       <div class="search-bar">
         <input type="text" placeholder="Search employees..." oninput="filterCards('employee', this.value)">
@@ -257,9 +274,15 @@
           <label for="f-title">Title / Role</label>
           <input id="f-title" placeholder="Director of Marketing">
         </div>
-        <div class="form-row">
-          <label for="f-org">Organization *</label>
-          <input id="f-org" placeholder="IDCO, NAHAD, McGill, etc.">
+        <div class="form-row two-col">
+          <div class="form-row">
+            <label for="f-org">Organization *</label>
+            <input id="f-org" placeholder="IDCO, NAHAD, McGill, etc.">
+          </div>
+          <div class="form-row" id="row-dept">
+            <label for="f-dept">Department</label>
+            <input id="f-dept" placeholder="Sales, Operations, etc.">
+          </div>
         </div>
         <div class="form-row two-col">
           <div class="form-row">
@@ -270,6 +293,20 @@
             <label for="f-phone">Phone</label>
             <input id="f-phone" placeholder="555-123-4567">
           </div>
+        </div>
+        <div class="form-row two-col" id="row-emp-extra" style="display:none;">
+          <div class="form-row">
+            <label for="f-ext">Extension</label>
+            <input id="f-ext" placeholder="x204">
+          </div>
+          <div class="form-row">
+            <label for="f-cell">Cell</label>
+            <input id="f-cell" placeholder="555-987-6543">
+          </div>
+        </div>
+        <div class="form-row" id="row-anniversary" style="display:none;">
+          <label for="f-anniversary">Anniversary Date</label>
+          <input id="f-anniversary" type="date">
         </div>
         <div class="form-row">
           <label for="f-note">Notes</label>
@@ -323,13 +360,26 @@
       var d = doc.data();
       var catClass = d.category === 'employee' ? 'employee' : d.category === 'vendor' ? 'vendor' : 'industry';
       var catLabel = d.category === 'employee' ? 'Employee' : d.category === 'vendor' ? 'Vendor' : 'Industry';
-      var html = '<div class="contact-card" data-search="' + esc((d.name || '') + ' ' + (d.org || '') + ' ' + (d.title || '')).toLowerCase() + '">';
+      var searchStr = ((d.name||'') + ' ' + (d.org||'') + ' ' + (d.title||'') + ' ' + (d.department||'')).toLowerCase();
+      var html = '<div class="contact-card" data-search="' + esc(searchStr) + '">';
       html += '<span class="cat-badge ' + catClass + '">' + catLabel + '</span>';
       html += '<div class="org">' + esc(d.org || '') + '</div>';
       html += '<h3>' + esc(d.name || '') + '</h3>';
       if (d.title) html += '<div class="title">' + esc(d.title) + '</div>';
+      if (d.department) html += '<div class="title" style="color:var(--green); font-weight:600;">' + esc(d.department) + '</div>';
       if (d.email) html += '<div class="contact-detail"><a href="mailto:' + esc(d.email) + '">' + esc(d.email) + '</a></div>';
-      if (d.phone) html += '<div class="contact-detail">' + esc(d.phone) + '</div>';
+      if (d.phone) {
+        var phoneStr = esc(d.phone);
+        if (d.ext) phoneStr += ' <span style="color:var(--gray);">x' + esc(d.ext) + '</span>';
+        html += '<div class="contact-detail">' + phoneStr + '</div>';
+      }
+      if (d.cell) html += '<div class="contact-detail" style="color:var(--gray);">Cell: ' + esc(d.cell) + '</div>';
+      if (d.anniversary) {
+        var ann = new Date(d.anniversary + 'T00:00:00');
+        var now = new Date();
+        var years = now.getFullYear() - ann.getFullYear();
+        html += '<div class="contact-detail" style="color:var(--gold); font-weight:600; font-size:11px;">Anniversary: ' + ann.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) + ' (' + years + ' yr' + (years !== 1 ? 's' : '') + ')</div>';
+      }
       if (d.note) html += '<div class="contact-note">"' + esc(d.note) + '"</div>';
       if (d.addedBy) html += '<div class="added-by">Added by ' + esc(d.addedBy) + (d.createdAt ? ' · ' + new Date(d.createdAt).toLocaleDateString() : '') + '</div>';
       html += '</div>';
@@ -375,9 +425,14 @@
       document.getElementById('modalTitle').textContent =
         category === 'employee' ? 'Add Employee' :
         category === 'vendor' ? 'Add Vendor' : 'Add Contact';
-      ['f-name','f-title','f-org','f-email','f-phone','f-note','f-addedby'].forEach(function(id) {
+      ['f-name','f-title','f-org','f-dept','f-email','f-phone','f-ext','f-cell','f-anniversary','f-note','f-addedby'].forEach(function(id) {
         document.getElementById(id).value = '';
       });
+      var isEmp = category === 'employee';
+      document.getElementById('row-emp-extra').style.display = isEmp ? '' : 'none';
+      document.getElementById('row-anniversary').style.display = isEmp ? '' : 'none';
+      document.getElementById('row-dept').style.display = (isEmp || category === 'vendor') ? '' : 'none';
+      if (isEmp) document.getElementById('f-org').value = 'McGill Hose & Coupling';
       document.getElementById('modalOverlay').classList.add('open');
     }
 
@@ -389,24 +444,141 @@
       var name = document.getElementById('f-name').value.trim();
       var org = document.getElementById('f-org').value.trim();
       if (!name || !org) { alert('Name and Organization are required.'); return; }
+      var category = document.getElementById('f-category').value;
 
       var data = {
         name: name,
         title: document.getElementById('f-title').value.trim(),
         org: org,
+        department: document.getElementById('f-dept').value.trim(),
         email: document.getElementById('f-email').value.trim(),
         phone: document.getElementById('f-phone').value.trim(),
         note: document.getElementById('f-note').value.trim(),
         addedBy: document.getElementById('f-addedby').value.trim(),
-        category: document.getElementById('f-category').value,
+        category: category,
         createdAt: Date.now()
       };
+      if (category === 'employee') {
+        data.ext = document.getElementById('f-ext').value.trim();
+        data.cell = document.getElementById('f-cell').value.trim();
+        data.anniversary = document.getElementById('f-anniversary').value || '';
+      }
 
       var docId = document.getElementById('f-docid').value;
       var ref = docId ? db.collection(COLLECTION).doc(docId) : db.collection(COLLECTION).doc();
       ref.set(data, { merge: true }).then(function() {
         closeModal();
         loadContacts();
+      });
+    }
+
+    /* ── CSV Import ── */
+    var pendingCsvRows = [];
+
+    function handleCsvUpload(input) {
+      var file = input.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var lines = e.target.result.split('\n').map(function(l) { return l.trim(); }).filter(Boolean);
+        if (lines.length < 2) { alert('CSV appears empty.'); return; }
+        var headers = lines[0].split(',').map(function(h) { return h.trim().toLowerCase().replace(/[^a-z0-9]/g, ''); });
+        var colMap = {};
+        var fieldNames = {
+          name: ['name','fullname','employeename'],
+          title: ['title','role','jobtitle','position'],
+          department: ['department','dept','division'],
+          email: ['email','emailaddress'],
+          phone: ['phone','phonenumber','officephone','work'],
+          ext: ['ext','extension','x'],
+          cell: ['cell','cellphone','mobile','mobilephone'],
+          anniversary: ['anniversary','anniversarydate','startdate','hiredate','dateofhire'],
+          note: ['notes','note','comments']
+        };
+        Object.keys(fieldNames).forEach(function(field) {
+          for (var i = 0; i < headers.length; i++) {
+            if (fieldNames[field].indexOf(headers[i]) !== -1) { colMap[field] = i; break; }
+          }
+        });
+
+        pendingCsvRows = [];
+        for (var r = 1; r < lines.length; r++) {
+          var cols = parseCSVLine(lines[r]);
+          if (!cols.length) continue;
+          var row = {};
+          Object.keys(colMap).forEach(function(f) { row[f] = (cols[colMap[f]] || '').trim(); });
+          if (row.name) pendingCsvRows.push(row);
+        }
+
+        var preview = document.getElementById('csvPreview');
+        var table = document.getElementById('csvTable');
+        document.getElementById('csvCount').textContent = pendingCsvRows.length + ' employees found';
+        var th = '<thead><tr style="background:var(--tan);"><th style="padding:6px 8px; text-align:left; font-size:11px; border-bottom:1px solid var(--border);">Name</th><th style="padding:6px 8px; text-align:left; font-size:11px; border-bottom:1px solid var(--border);">Title</th><th style="padding:6px 8px; text-align:left; font-size:11px; border-bottom:1px solid var(--border);">Dept</th><th style="padding:6px 8px; text-align:left; font-size:11px; border-bottom:1px solid var(--border);">Email</th><th style="padding:6px 8px; text-align:left; font-size:11px; border-bottom:1px solid var(--border);">Phone</th><th style="padding:6px 8px; text-align:left; font-size:11px; border-bottom:1px solid var(--border);">Ext</th><th style="padding:6px 8px; text-align:left; font-size:11px; border-bottom:1px solid var(--border);">Cell</th><th style="padding:6px 8px; text-align:left; font-size:11px; border-bottom:1px solid var(--border);">Anniversary</th></tr></thead>';
+        var tb = '<tbody>';
+        pendingCsvRows.forEach(function(row) {
+          tb += '<tr>';
+          ['name','title','department','email','phone','ext','cell','anniversary'].forEach(function(f) {
+            tb += '<td style="padding:5px 8px; font-size:12px; border-bottom:1px solid var(--border);">' + esc(row[f] || '') + '</td>';
+          });
+          tb += '</tr>';
+        });
+        tb += '</tbody>';
+        table.innerHTML = th + tb;
+        preview.style.display = 'block';
+      };
+      reader.readAsText(file);
+      input.value = '';
+    }
+
+    function parseCSVLine(line) {
+      var result = []; var current = ''; var inQuotes = false;
+      for (var i = 0; i < line.length; i++) {
+        var ch = line[i];
+        if (inQuotes) {
+          if (ch === '"' && line[i+1] === '"') { current += '"'; i++; }
+          else if (ch === '"') { inQuotes = false; }
+          else { current += ch; }
+        } else {
+          if (ch === '"') { inQuotes = true; }
+          else if (ch === ',') { result.push(current); current = ''; }
+          else { current += ch; }
+        }
+      }
+      result.push(current);
+      return result;
+    }
+
+    function cancelCsv() {
+      pendingCsvRows = [];
+      document.getElementById('csvPreview').style.display = 'none';
+    }
+
+    function importCsv() {
+      if (!pendingCsvRows.length) return;
+      var batch = db.batch();
+      pendingCsvRows.forEach(function(row) {
+        var ref = db.collection(COLLECTION).doc();
+        batch.set(ref, {
+          name: row.name || '',
+          title: row.title || '',
+          department: row.department || '',
+          org: 'McGill Hose & Coupling',
+          email: row.email || '',
+          phone: row.phone || '',
+          ext: row.ext || '',
+          cell: row.cell || '',
+          anniversary: row.anniversary || '',
+          note: row.note || '',
+          addedBy: 'CSV Import',
+          category: 'employee',
+          createdAt: Date.now()
+        });
+      });
+      batch.commit().then(function() {
+        cancelCsv();
+        loadContacts();
+        alert(pendingCsvRows.length + ' employees imported.');
+        pendingCsvRows = [];
       });
     }
 
