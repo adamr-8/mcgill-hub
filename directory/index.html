@@ -83,6 +83,15 @@
       background: var(--white); border: 1px solid var(--border); border-radius: 12px;
       padding: 20px; position: relative;
     }
+    .contact-card .card-actions {
+      position: absolute; top: 12px; right: 12px; display: flex; gap: 4px;
+    }
+    .contact-card .card-actions button {
+      background: none; border: none; cursor: pointer; padding: 4px 6px;
+      border-radius: 6px; font-size: 13px; opacity: 0.3; transition: all .15s;
+    }
+    .contact-card .card-actions button:hover { opacity: 1; background: rgba(0,0,0,.05); }
+    .contact-card .card-actions .btn-del:hover { opacity: 1; background: rgba(192,57,43,.1); color: #c0392b; }
     .contact-card .cat-badge {
       display: inline-block; font-size: 9px; font-weight: 700; padding: 2px 8px;
       border-radius: 8px; text-transform: uppercase; letter-spacing: .04em;
@@ -375,6 +384,10 @@
       var catLabel = d.category === 'employee' ? 'Employee' : d.category === 'vendor' ? 'Vendor' : 'Industry';
       var searchStr = ((d.name||'') + ' ' + (d.org||'') + ' ' + (d.title||'') + ' ' + (d.department||'')).toLowerCase();
       var html = '<div class="contact-card" data-search="' + esc(searchStr) + '" data-dept="' + esc(d.department || '') + '" data-loc="' + esc(d.location || '') + '">';
+      html += '<div class="card-actions">';
+      html += '<button class="btn-edit" title="Edit" onclick="editContact(\'' + doc.id + '\')">&#9998;</button>';
+      html += '<button class="btn-del" title="Delete" onclick="deleteContact(\'' + doc.id + '\', \'' + esc(d.name || '').replace(/'/g, "\\'") + '\')">&#128465;</button>';
+      html += '</div>';
       html += '<span class="cat-badge ' + catClass + '">' + catLabel + '</span>';
       html += '<div class="org">' + esc(d.org || '') + '</div>';
       html += '<h3>' + esc(d.name || '') + '</h3>';
@@ -549,7 +562,49 @@
       ref.set(data, { merge: true }).then(function() {
         closeModal();
         loadContacts();
+      }).catch(function(err) {
+        console.error('Firestore save failed:', err);
+        alert('Save failed: ' + err.message + '\n\nThis usually means the Firestore security rules need to allow writes to the "directory" collection.');
       });
+    }
+
+    /* ── Delete contact ── */
+    function deleteContact(docId, name) {
+      if (!confirm('Delete "' + name + '"? This cannot be undone.')) return;
+      db.collection(COLLECTION).doc(docId).delete().then(function() {
+        loadContacts();
+      }).catch(function(err) {
+        alert('Delete failed: ' + err.message);
+      });
+    }
+
+    /* ── Edit contact (load into modal) ── */
+    function editContact(docId) {
+      var doc = allDocs.find(function(d) { return d.id === docId; });
+      if (!doc) return;
+      var d = doc.data();
+      var category = d.category || 'industry';
+      document.getElementById('f-category').value = category;
+      document.getElementById('f-docid').value = docId;
+      document.getElementById('modalTitle').textContent = 'Edit ' + (d.name || 'Contact');
+      document.getElementById('f-name').value = d.name || '';
+      document.getElementById('f-title').value = d.title || '';
+      document.getElementById('f-org').value = d.org || '';
+      document.getElementById('f-dept').value = d.department || '';
+      document.getElementById('f-email').value = d.email || '';
+      document.getElementById('f-phone').value = d.phone || '';
+      document.getElementById('f-note').value = d.note || '';
+      document.getElementById('f-addedby').value = d.addedBy || '';
+      var isEmp = category === 'employee';
+      document.getElementById('row-emp-extra').style.display = isEmp ? '' : 'none';
+      document.getElementById('row-anniversary').style.display = isEmp ? '' : 'none';
+      document.getElementById('row-dept').style.display = (isEmp || category === 'vendor') ? '' : 'none';
+      if (isEmp) {
+        document.getElementById('f-ext').value = d.ext || '';
+        document.getElementById('f-cell').value = d.cell || '';
+        document.getElementById('f-anniversary').value = d.anniversary || '';
+      }
+      document.getElementById('modalOverlay').classList.add('open');
     }
 
     /* ── CSV Import ── */
