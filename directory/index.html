@@ -163,6 +163,28 @@
     .btn-save { background: var(--green); color: var(--white); }
     .btn-save:hover { filter: brightness(1.05); }
 
+    .pager {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      margin-top: 20px; padding: 12px 0;
+    }
+    .pager button {
+      padding: 6px 14px; border-radius: 6px; border: 1px solid var(--border);
+      background: var(--white); font-size: 12px; font-weight: 600;
+      cursor: pointer; color: var(--text); transition: all .12s;
+    }
+    .pager button:hover:not(:disabled) { border-color: var(--green); color: var(--green); }
+    .pager button:disabled { opacity: .35; cursor: default; }
+    .pager button.active { background: var(--green); color: var(--white); border-color: var(--green); }
+    .pager .page-info { font-size: 12px; color: var(--gray); }
+    .page-size-wrap {
+      display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gray);
+    }
+    .page-size-wrap select {
+      padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px;
+      font: inherit; font-size: 12px; outline: none;
+    }
+    .page-size-wrap select:focus { border-color: var(--green); }
+
     .search-bar {
       display: flex; gap: 8px; margin-bottom: 16px;
     }
@@ -223,8 +245,15 @@
       </div>
       <div class="search-bar">
         <input type="text" placeholder="Search contacts..." oninput="filterCards('industry', this.value)">
+        <div class="page-size-wrap">
+          Show:
+          <select id="ps-industry" onchange="paginate('industry')">
+            <option value="6">6</option><option value="9">9</option><option value="18" selected>18</option><option value="27">27</option><option value="0">All</option>
+          </select>
+        </div>
       </div>
       <div class="contact-grid" id="grid-industry"></div>
+      <div class="pager" id="pager-industry"></div>
     </div>
 
     <!-- Employees -->
@@ -265,8 +294,17 @@
           <option value="anniversary">Sort: Anniversary</option>
         </select>
       </div>
-      <div id="emp-count" style="font-size:12px; color:var(--gray); margin-bottom:12px;"></div>
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+        <div id="emp-count" style="font-size:12px; color:var(--gray);"></div>
+        <div class="page-size-wrap">
+          Show:
+          <select id="ps-employee" onchange="paginate('employee')">
+            <option value="6">6</option><option value="9">9</option><option value="18" selected>18</option><option value="27">27</option><option value="0">All</option>
+          </select>
+        </div>
+      </div>
       <div class="contact-grid" id="grid-employee"></div>
+      <div class="pager" id="pager-employee"></div>
     </div>
 
     <!-- Vendors -->
@@ -277,8 +315,15 @@
       </div>
       <div class="search-bar">
         <input type="text" placeholder="Search vendors..." oninput="filterCards('vendor', this.value)">
+        <div class="page-size-wrap">
+          Show:
+          <select id="ps-vendor" onchange="paginate('vendor')">
+            <option value="6">6</option><option value="9">9</option><option value="18" selected>18</option><option value="27">27</option><option value="0">All</option>
+          </select>
+        </div>
       </div>
       <div class="contact-grid" id="grid-vendor"></div>
+      <div class="pager" id="pager-vendor"></div>
     </div>
 
   </div>
@@ -467,6 +512,8 @@
         populateDropdown('emp-dept', departments);
         populateDropdown('emp-loc', locations);
         filterEmployees();
+        paginate('industry', 1);
+        paginate('vendor', 1);
       });
     }
 
@@ -496,10 +543,13 @@
         var matchDept = !dept || (card.dataset.dept || '') === dept;
         var matchLoc = !loc || (card.dataset.loc || '') === loc;
         var show = matchSearch && matchDept && matchLoc;
+        card.dataset.filtered = show ? '' : 'hide';
         card.style.display = show ? '' : 'none';
         if (show) shown++;
       });
       document.getElementById('emp-count').textContent = shown + ' of ' + cards.length + ' employees';
+      currentPage.employee = 1;
+      paginate('employee', 1);
     }
 
     /* ── Search / filter ── */
@@ -507,8 +557,12 @@
       var grid = document.getElementById('grid-' + cat);
       var q = query.toLowerCase().trim();
       grid.querySelectorAll('.contact-card').forEach(function(card) {
-        card.style.display = !q || card.dataset.search.indexOf(q) !== -1 ? '' : 'none';
+        var match = !q || card.dataset.search.indexOf(q) !== -1;
+        card.dataset.filtered = match ? '' : 'hide';
+        card.style.display = match ? '' : 'none';
       });
+      currentPage[cat] = 1;
+      paginate(cat, 1);
     }
 
     /* ── Modal ── */
@@ -773,6 +827,65 @@
           setTimeout(loadContacts, 1000);
         }
       });
+    }
+
+    /* ── Pagination ── */
+    var currentPage = { industry: 1, employee: 1, vendor: 1 };
+
+    function paginate(cat, page) {
+      var grid = document.getElementById('grid-' + cat);
+      var cards = Array.from(grid.querySelectorAll('.contact-card'));
+      // Get only visible cards (respect search/filter)
+      var visible = cards.filter(function(c) { return c.dataset.filtered !== 'hide'; });
+      var sel = document.getElementById('ps-' + cat);
+      var perPage = parseInt(sel.value) || 0;
+
+      if (!perPage || perPage >= visible.length) {
+        // Show all
+        visible.forEach(function(c) { c.style.display = ''; });
+        document.getElementById('pager-' + cat).innerHTML = '';
+        currentPage[cat] = 1;
+        return;
+      }
+
+      var totalPages = Math.ceil(visible.length / perPage);
+      if (page === undefined) page = currentPage[cat];
+      if (page < 1) page = 1;
+      if (page > totalPages) page = totalPages;
+      currentPage[cat] = page;
+
+      var start = (page - 1) * perPage;
+      var end = start + perPage;
+      visible.forEach(function(c, i) {
+        c.style.display = (i >= start && i < end) ? '' : 'none';
+      });
+
+      // Build pager
+      var pagerDiv = document.getElementById('pager-' + cat);
+      var html = '<button onclick="paginate(\'' + cat + '\', 1)" ' + (page <= 1 ? 'disabled' : '') + '>&laquo;</button>';
+      html += '<button onclick="paginate(\'' + cat + '\', ' + (page - 1) + ')" ' + (page <= 1 ? 'disabled' : '') + '>&lsaquo;</button>';
+
+      // Show page numbers with ellipsis
+      var range = [];
+      for (var i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= page - 1 && i <= page + 1)) {
+          range.push(i);
+        } else if (range[range.length - 1] !== '...') {
+          range.push('...');
+        }
+      }
+      range.forEach(function(p) {
+        if (p === '...') {
+          html += '<span class="page-info">...</span>';
+        } else {
+          html += '<button onclick="paginate(\'' + cat + '\', ' + p + ')" class="' + (p === page ? 'active' : '') + '">' + p + '</button>';
+        }
+      });
+
+      html += '<button onclick="paginate(\'' + cat + '\', ' + (page + 1) + ')" ' + (page >= totalPages ? 'disabled' : '') + '>&rsaquo;</button>';
+      html += '<button onclick="paginate(\'' + cat + '\', ' + totalPages + ')" ' + (page >= totalPages ? 'disabled' : '') + '>&raquo;</button>';
+      html += '<span class="page-info">' + visible.length + ' total</span>';
+      pagerDiv.innerHTML = html;
     }
 
     /* ── Init ── */
